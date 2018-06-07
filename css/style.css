@@ -232,12 +232,13 @@ div {
     .post .post-content pre code {
       padding: 0 2em; }
     .post .post-content p {
-      margin: 0 0 1.234em; }
+      margin: 0 0 1em; }
       .post .post-content p code {
         display: inline-block;
-        margin: 0 5px;
-        padding: 0 5px;
-        background: #f7f8f8;
+        margin: 0 3px;
+        padding: 0 3px;
+        background: #ebebeb;
+        border-radius: 5px;
         font-family: Menlo, Consolas, monospace !important; }
       .post .post-content p a {
         color: #01579f;
@@ -271,7 +272,7 @@ div {
         display: inline-block;
         margin: 0 5px;
         padding: 0px 5px;
-        background: #f7f8f8;
+        background: #ebebeb;
         font-family: Menlo, Consolas, monospace !important; }
       .post .post-content ul a, .post .post-content ol a {
         color: #01579f;
