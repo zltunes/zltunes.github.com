@@ -4,8 +4,121 @@
 
     
   <url>
+    <loc>https://zltunes.github.io/2018/06/13/ios10-notification/</loc>
+    <lastmod>2018-06-14T07:48:08.131Z</lastmod>
+    <data>
+        <display>
+        <title>iOS 10 通知更新详解</title>
+        <pubTime>2018-06-13T13:24:13.661Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+        <tag>通知</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2018/06/13/ios-android-transfer/</loc>
+    <lastmod>2018-06-14T07:44:55.989Z</lastmod>
+    <data>
+        <display>
+        <title>iPhone & Android 换机通信方案分析</title>
+        <pubTime>2018-06-13T13:24:30.570Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+        <tag>iPhone</tag>
+         
+        <tag>Android</tag>
+         
+        <tag>换机</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+             
+              <breadCrumb title="Android" url="https://zltunes.github.io/categories/iOS/Android/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2018/06/13/ios10-messages-framework/</loc>
+    <lastmod>2018-06-14T07:43:10.835Z</lastmod>
+    <data>
+        <display>
+        <title>iOS 10 之 Messages framework</title>
+        <pubTime>2018-06-13T13:24:07.715Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+        <tag>Messages</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2018/06/13/iosapp-certificate-signature/</loc>
+    <lastmod>2018-06-14T07:29:26.015Z</lastmod>
+    <data>
+        <display>
+        <title>iOS 程序证书及签名机制</title>
+        <pubTime>2018-06-13T13:24:00.822Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2018/05/30/light-viewcontrollers/</loc>
+    <lastmod>2018-06-14T03:56:53.182Z</lastmod>
+    <data>
+        <display>
+        <title>为 ViewControllers 瘦身</title>
+        <pubTime>2018-05-30T09:44:10.144Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://zltunes.github.io/2018/06/13/dynamic-height-cell/</loc>
-    <lastmod>2018-06-14T03:31:48.445Z</lastmod>
+    <lastmod>2018-06-14T03:39:31.845Z</lastmod>
     <data>
         <display>
         <title>TableView 动态 cell 高度自适应方案</title>
@@ -23,26 +136,6 @@
     </url>
 
     
-    
-  <url>
-    <loc>https://zltunes.github.io/2018/05/30/light-viewcontrollers/</loc>
-    <lastmod>2018-06-10T08:34:06.255Z</lastmod>
-    <data>
-        <display>
-        <title>为 ViewControllers 瘦身</title>
-        <pubTime>2018-05-30T09:44:10.144Z</pubTime>
-        
-        <tag>iOS</tag>
-         
-         
-           
-             
-              <breadCrumb title="技术" url="https://zltunes.github.io/categories/technology/"/>
-          
-        </display>
-    </data>
-    </url>
-
     
     
 </urlset>
