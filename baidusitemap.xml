@@ -4,30 +4,8 @@
 
     
   <url>
-    <loc>https://zltunes.github.io/2018/06/13/ios10-notification/</loc>
-    <lastmod>2018-06-14T07:48:08.131Z</lastmod>
-    <data>
-        <display>
-        <title>iOS 10 通知更新详解</title>
-        <pubTime>2018-06-13T13:24:13.661Z</pubTime>
-        
-        <tag>iOS</tag>
-         
-        <tag>通知</tag>
-         
-         
-           
-             
-              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
     <loc>https://zltunes.github.io/2018/06/13/ios-android-transfer/</loc>
-    <lastmod>2018-06-14T07:44:55.989Z</lastmod>
+    <lastmod>2018-06-14T14:10:13.843Z</lastmod>
     <data>
         <display>
         <title>iPhone & Android 换机通信方案分析</title>
@@ -44,10 +22,75 @@
          
            
              
+              <breadCrumb title="Android" url="https://zltunes.github.io/categories/Android/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2018/06/13/robot-operating-system-intro/</loc>
+    <lastmod>2018-06-14T14:08:56.382Z</lastmod>
+    <data>
+        <display>
+        <title>机器人操作系统（ROS/Android）对比</title>
+        <pubTime>2018-06-13T13:23:23.573Z</pubTime>
+        
+        <tag>Android</tag>
+         
+        <tag>ROS</tag>
+         
+        <tag>机器人</tag>
+         
+         
+           
+             
+              <breadCrumb title="Android" url="https://zltunes.github.io/categories/Android/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2018/06/14/reactivecocoa-tutorial/</loc>
+    <lastmod>2018-06-14T14:02:05.589Z</lastmod>
+    <data>
+        <display>
+        <title>ReactiveCocoa 入门与登录实战</title>
+        <pubTime>2018-06-14T10:04:08.707Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+        <tag>ReactiveCocoa</tag>
+         
+         
+           
+             
               <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2018/06/13/ios10-notification/</loc>
+    <lastmod>2018-06-14T07:51:50.102Z</lastmod>
+    <data>
+        <display>
+        <title>iOS 10 通知更新详解</title>
+        <pubTime>2018-06-13T13:24:13.661Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+        <tag>通知</tag>
+         
+         
+           
              
-              <breadCrumb title="Android" url="https://zltunes.github.io/categories/iOS/Android/"/>
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
           
         </display>
     </data>
