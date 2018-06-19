@@ -1,0 +1,140 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>iOS 热更新解读（一）APatch &amp; JavaScriptCore | zltunes</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/8.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-dark.min.css"><link rel="stylesheet" type="text/css" href="/css/code-number.css?v=0.0.0"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script><script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><script type="text/javascript" src="/js/code-number.js?v=0.0.0"></script></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">iOS 热更新解读（一）APatch &amp; JavaScriptCore</h1><a id="logo" href="/.">zltunes</a><p class="description">赵磊的博客</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/work/"><i class="fa fa-building"> 作品</i></a><a href="/resume/"><i class="fa fa-file"> 简历</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">iOS 热更新解读（一）APatch &amp; JavaScriptCore</h1><div class="post-meta">Jun 14, 2018<span> | </span><span class="category"><a href="/categories/iOS/">iOS</a></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#iOS-动态更新的几种方案"><span class="toc-number">1.</span> <span class="toc-text">iOS 动态更新的几种方案</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#APatch-与-JSPatch-的关系"><span class="toc-number">2.</span> <span class="toc-text">APatch 与 JSPatch 的关系</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#APatch-工作流程"><span class="toc-number">3.</span> <span class="toc-text">APatch 工作流程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#传输安全"><span class="toc-number">3.1.</span> <span class="toc-text">传输安全</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#本地存储"><span class="toc-number">3.2.</span> <span class="toc-text">本地存储</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#JSPatch-——-基于-JavaScriptCore-framework"><span class="toc-number">4.</span> <span class="toc-text">JSPatch —— 基于 JavaScriptCore.framework</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#OC-调用-JS"><span class="toc-number">4.1.</span> <span class="toc-text">OC 调用 JS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JS调用OC"><span class="toc-number">4.2.</span> <span class="toc-text">JS调用OC</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#方式一：-JSContext注册NSBlock对象："><span class="toc-number">4.2.1.</span> <span class="toc-text">方式一： JSContext注册NSBlock对象：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方式二：OC对象实现JSExport协议"><span class="toc-number">4.2.2.</span> <span class="toc-text">方式二：OC对象实现JSExport协议:</span></a></li></ol></li></ol></li></ol></div></div><div class="post-content"><p>之前在手淘实习负责过百川<a href="http://baichuan.taobao.com/product/hotfix.htm?infoq=01" target="_blank" rel="noopener">Hotfix能力</a>的建设，Android 端采用阿里自研 <a href="https://mp.weixin.qq.com/s/5KjSPvUflbg0pVRIjtLiRA" target="_blank" rel="noopener">Sophix</a>，iOS 端采用 JSPatch，解读 JSPatch 前有必要先了解 Objective-C 与 JavaScript 的互相调用。<br><a id="more"></a></p>
+<h1 id="iOS-动态更新的几种方案"><a href="#iOS-动态更新的几种方案" class="headerlink" title="iOS 动态更新的几种方案"></a>iOS 动态更新的几种方案</h1><ul>
+<li>WebView 加载 HTML5 动态更新。</li>
+<li>React Native/weex js 动态更新。</li>
+<li>lua 脚本文件控制动态更新（代表框架 <a href="https://github.com/mmin18/WaxPatch" target="_blank" rel="noopener">WaxPatch</a> ）。</li>
+<li>js 脚本文件控制动态更新（代表框架 <a href="https://github.com/bang590/JSPatch/" target="_blank" rel="noopener">JSPatch</a>）。</li>
+<li><a href="http://blog.csdn.net/like7xiaoben/article/details/44081257" target="_blank" rel="noopener">framework 实现功能模块动态更新</a>。</li>
+</ul>
+<p>其中 WaxPatch 和 JSPatch 是使用较广泛的两种热修复方案。而苹果 review guideline 提到只允通过<code>JavaScriptCore.framework</code>或<code>WebKit</code>执行脚本，因此 JSPatch 是真正被 Apple 官方支持的。此外鉴于<code>JavaScript</code>比<code>lua</code>语言更亲民，使用系统内置的 <code>JavaScriptCore.framework</code>而无需内嵌lua脚本引擎来解释运行lua代码，JSPatch 便成为目前 iOS 热修复使用最多，效果也最佳的方案。</p>
+<blockquote>
+<p>有关上述几种热修复方案的比较可阅读这两篇文章：<br><a href="http://awhisper.github.io/2016/07/22/Weex-ReactNative-JSPatch/" target="_blank" rel="noopener">Weex &amp; ReactNative &amp; JSPatch</a><br><a href="https://blog.cnbang.net/works/2767/" target="_blank" rel="noopener">WaxPatch与JSPatch对比</a></p>
+</blockquote>
+<h1 id="APatch-与-JSPatch-的关系"><a href="#APatch-与-JSPatch-的关系" class="headerlink" title="APatch 与 JSPatch 的关系"></a>APatch 与 JSPatch 的关系</h1><p>JSPatch 使用时需要一个后台下发和管理脚本。阿里百川 HotFix 平台帮助开发者做了这些事。通过提供脚本托管、版本管理、脚本文件及传输过程加密等服务，让开发者无需搭建后台和关心部署操作，只需引入一个 SDK 即可直接使用 JSPatch 进行热修复。这个 SDK 就是 <a href="http://baichuan.taobao.com/docs/doc.htm?spm=a3c0d.7629140.0.0.qm0FoS&amp;treeId=234&amp;articleId=105670&amp;docType=1" target="_blank" rel="noopener">APatch（iOS）</a>。<br><img src="https://img.alicdn.com/tps/TB12.jYMVXXXXX0XFXXXXXXXXXX-611-521.png" alt=""><br>APatch 在 JSPatch 核心代码的基础上封装了向 HotFix 平台请求脚本／传输解密／脚本管理／本地调试等功能，是配合阿里百川 HotFix 平台一起使用的。</p>
+<h1 id="APatch-工作流程"><a href="#APatch-工作流程" class="headerlink" title="APatch 工作流程"></a>APatch 工作流程</h1><p><img src="http://seuzl.qiniudn.com/md/1528966993441.png" alt=""><br>JSPatch 脚本执行权限很高，若被第三方篡改会<a href="http://www.ibtimes.co.uk/ios-over-1000-apps-that-use-jspatch-technology-put-users-risk-1540734" target="_blank" rel="noopener">带来很大安全问题</a>。因此 APatch 和 HotFix 平台都对安全问题考虑良多。</p>
+<h2 id="传输安全"><a href="#传输安全" class="headerlink" title="传输安全"></a>传输安全</h2><p>从上图可看出，客户端从服务器下载 Patch 之前先要下载指定 Patch 配置信息即<code>PatchInfo</code>，其中包含了 Patch 文件密钥 <code>file_token</code>。<br>服务端：</p>
+<ul>
+<li>对 <code>file_token</code> 用 RSA 公钥加密。</li>
+<li>对 <code>PatchInfo</code> 原始数据采用 HMacSha1 算法计算的哈希值，并将原始数据和哈希值<code>serviceToken</code>放在同一消息中传送给客户端。</li>
+</ul>
+<p>客户端：</p>
+<ul>
+<li>使用 <code>secret</code> 计算所接收数据的哈希值。</li>
+<li>检查计算所得的 HMAC 是否与传送的 HMAC 匹配。</li>
+<li>只有<code>PatchInfo</code>通过校验匹配后才会去下载<code>Patch</code>。</li>
+</ul>
+<p>另外，update patch 的接口已迁至 https，进一步保证了数据传输的安全。</p>
+<h2 id="本地存储"><a href="#本地存储" class="headerlink" title="本地存储"></a>本地存储</h2><p>本地存储的脚本被篡改的机会小很多，只在越狱机器上有点风险，对此 APatch SDK 对下载的脚本进行了AES对称加密，每次读取时：</p>
+<ul>
+<li>客户端使用 RSA 私钥解密 <code>PatchInfo.file_token</code> 获取 <code>key</code> 和 <code>iv</code>。</li>
+<li>使用 <code>key</code> 和 <code>iv</code> 进行 AES 解密。</li>
+</ul>
+<p>解密成功后的数据存储在 <code>script</code> 中，然后会调用 JSPatch 运行js脚本的接口：</p>
+<pre><code class="Objective-C">[JPEngine evaluateScript:script];
+</code></pre>
+<p>至此，APatch 的工作已经完成，接下来具体的热修复工作就交给 JSPatch 了。</p>
+<h1 id="JSPatch-——-基于-JavaScriptCore-framework"><a href="#JSPatch-——-基于-JavaScriptCore-framework" class="headerlink" title="JSPatch —— 基于 JavaScriptCore.framework"></a>JSPatch —— 基于 JavaScriptCore.framework</h1><blockquote>
+<p>JSPatch 是一个开源项目(<a href="https://github.com/bang590/JSPatch/" target="_blank" rel="noopener">Github链接</a>)，只需要在项目里引入极小的引擎文件，就可以使用 JavaScript 调用任何 Objective-C 的原生接口，替换任意 Objective-C 原生方法。目前主要用于下发 JS 脚本替换原生 Objective-C 代码，实时修复线上 bug。<br>–<em>摘自 JSPatch wiki</em></p>
+</blockquote>
+<p>“极小的引擎文件”指的就是 JavaScriptCore。OS X Mavericks 和 iOS 7 引入了 JavaScriptCore 库，它把 WebKit 的 JavaScript 引擎用 Objective-C 封装，提供了简单、快速、安全的方式接入世界上最流行的语言：</p>
+<ul>
+<li>在 Objective-C 代码中直接执行 JavaScript 代码段；</li>
+<li>在 JavaScript 语言环境里调用 Objective-C 公开给 JavaScript的 方法；</li>
+<li>内存管理和线程封装。</li>
+</ul>
+<p>如果未接触过 JavaScriptCore，在深入学习 JSPatch 之前有必要先了解一下这个js引擎怎么使用。</p>
+<h2 id="OC-调用-JS"><a href="#OC-调用-JS" class="headerlink" title="OC 调用 JS"></a>OC 调用 JS</h2><p><code>JSContext</code> 是运行 JavaScript 代码的环境。可以在 <code>JSContext</code>中创建变量、计算、定义方法等：</p>
+<pre><code class="Objective-C">JSContext *context = [[JSContext alloc] init];
+[context evaluateScript:@&quot;var num = 5 + 5&quot;];
+[context evaluateScript:@&quot;var names = [&#39;Grace&#39;, &#39;Ada&#39;, &#39;Margaret&#39;]&quot;];
+[context evaluateScript:@&quot;var triple = function(value) { return value * 3 }&quot;];
+</code></pre>
+<p><code>JSValue</code>包装了每一个可能的 JavaScript 值，任何出自 <code>JSContext</code> 的值都被包裹在一个 <code>JSValue</code> 对象中：</p>
+<pre><code class="Objective-C">JSValue *tripleNum = [context evaluateScript:@&quot;triple(num)&quot;];
+//取出jsvalue中的值
+NSLog(@&quot;Tripled: %d&quot;, [tripleNum toInt32]);//30
+</code></pre>
+<p>对 <code>JSContext</code> 和 <code>JSValue</code> 实例使用下标可以访问之前创建的 context 的任何值。<code>JSContext</code> 需要一个字符串下标，<code>JSValue</code> 使用字符串或整数下标来得到里面的对象和数组：</p>
+<pre><code class="Objective-C">JSValue *names = context[@&quot;names&quot;];
+JSValue *initialName = names[0];
+NSLog(@&quot;The first name: %@&quot;, [initialName toString]);//Grace
+</code></pre>
+<p>调用JS方法需要使用<code>callWithArguments:</code>传递参数：</p>
+<pre><code class="Objective-C">JSValue *tripleFunction = context[@&quot;triple&quot;];
+JSValue *result = [tripleFunction callWithArguments:@[@5]];
+NSLog(@&quot;five tripled:%d&quot;,[result toInt32]);
+</code></pre>
+<p>这里使用 Foundation 类型<code>NSArray</code>作为参数来直接调用该函数。JavaScriptCore 可以 很轻松地处理这个桥接。<br>以上js代码都以字符串形式直接出现在oc代码中，实际中也可以在项目中引入.js文件，执行js文件中的内容。即：</p>
+<pre><code class="Objective-C">NSString *path = [[NSBundle bundleForClass:[self class]] pathForResource:@&quot;main&quot; ofType:@&quot;js&quot;];
+NSString *jsCore = [[NSString alloc] initWithData:[[NSFileManager defaultManager] contentsAtPath:path] encoding:NSUTF8StringEncoding];
+[context evaluateScript:jsCore];
+</code></pre>
+<h2 id="JS调用OC"><a href="#JS调用OC" class="headerlink" title="JS调用OC"></a>JS调用OC</h2><p>从JS访问在OC中定义的对象和方法有两种方式：</p>
+<h3 id="方式一：-JSContext注册NSBlock对象："><a href="#方式一：-JSContext注册NSBlock对象：" class="headerlink" title="方式一： JSContext注册NSBlock对象："></a>方式一： <code>JSContext</code>注册<code>NSBlock</code>对象：</h3><pre><code class="Objective-C">context[@&quot;add&quot;] = ^(NSInteger a, NSInteger b) {
+            NSLog(@&quot;add result:%@&quot;, @(a + b));
+        };
+context.exceptionHandler = ^(JSContext *con, JSValue *exception) {
+            NSLog(@&quot;%@&quot;, exception);
+            con.exception = exception;
+            //异常处理...
+        };
+[context evaluateScript:@&quot;add(2,3)&quot;];//5
+</code></pre>
+<h3 id="方式二：OC对象实现JSExport协议"><a href="#方式二：OC对象实现JSExport协议" class="headerlink" title="方式二：OC对象实现JSExport协议:"></a>方式二：OC对象实现<code>JSExport</code>协议:</h3><p>定义一个<code>Test</code>类，遵循 <code>JSExport</code>协议：</p>
+<pre><code class="Objective-C">// in Test.h -----------------
+
+//定义一个JSExport子协议，暴露OC方法定义
+@protocol TestJSExports &lt;JSExport&gt;
+
+- (void)log:(id)value;
+- (void)addX:(int)x withY:(int)y;
+
+@end
+
+@interface Test : NSObject &lt;TestJSExports&gt;
+
+- (void)callOC;
+
+@end
+
+// in Test.m -----------------
+
+@implementation Test
+
+- (void)callOC {
+    JSContext *context = [[JSContext alloc] init];
+    //将实现了上面定义的协议的对象设置给JSContext
+    context[@&quot;Test&quot;] = self;
+    //执行在JSContext中的JS代码，即可以执行传入的对象的JSExport协议中定义的方法
+    [context evaluateScript:@&quot;Test.log(&#39;Hello JavaScript&#39;)&quot;];
+    [context evaluateScript:@&quot;Test.addXWithY(1, 2);&quot;];
+}
+
+- (void)log:(id)value {
+    NSLog(@&quot;value = %@&quot;, value);
+}
+
+- (void)addX:(int)x withY:(int)y {
+    NSLog(@&quot;x + y = %d&quot;, x + y);
+}
+
+@end
+
+</code></pre>
+<p>测试：</p>
+<pre><code class="Objective-C">Test *test = [[Test alloc]init];
+[test callOC];
+//&quot;value = Hello JavaScript&quot;,&quot;x + y = 3&quot;
+</code></pre>
+</div><script type="text/javascript" src="/js/share.js?v=0.0.0" async></script><a class="article-share-link" data-url="https://zltunes.github.io/2018/06/14/jspatch-apatch&amp;javascriptcore/" data-id="cjil43y4t000rymrk7uwfzq5g" data-qrcode="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAN4AAADeCAAAAAB3DOFrAAACq0lEQVR42u3a0W4bMQwEQP//T7dAnwK0tndJKTWCuaeDz5FuFECkST0e8fXrz/X1/tn1+m//HuHZ9/PxD1x4eHh4o1d/Pdyz+2Q5TpGGS4yHh4d3jZcEg3bvffY0mWW2xHh4eHifxstT532Oj4eHh/czeLPf/kmS3QYVPDw8vE/g5dPkiXLyeVtuuFhrwcPDw7vQRfqc++v9PTw8PLxRV73ddpNgkIScY++Jh4eHd4E3K7nO2O0hg1l5t1h1PDw8vBFvVmzdb9x5+p4v6D8UeHh4eBd4s+17U1RdveKooIyHh4d3lpdMkAeGWUNrU5h4zCIMHh4e3ra2UGz9+eGq2cGCZOvPP8HDw8O7wTuVKJ8qv7YljzdP8fDw8C7w2hbUbLNOCg1tYaJYYjw8PLzLvCQHnzWo9lluHlrw8PDwbvOSpPZG42q2iO374OHh4Z3l5Q2nWVkhDwybBtvTT/Dw8PCu8R7ldTaB3sz4Zkw8PDy8b+S1CXS+3bdLk3wzOjqAh4eHd5TXbtmbQuqsPTYMVHh4eHgXeG3ptm2P3Sh2tE/x8PDwzvLyRldbesgPGbTj1P83PDw8vKO8nDRrRG1S7VnCXZck8PDw8Na8dovfNM/awwSzMIOHh4f3nbx8sqRZNSs6zNL9KDDg4eHhLXhvUtKyTJDz8nnzEnAdl/Dw8PBGvJbUpsuzFHmDj/p7eHh4eEd5CXWTcO8DybH6Bx4eHt4Cllzt9O1xrvyYV1R0xsPDw7vAm/3sz4eLSqvrAwTtLHh4eHh7XtvuapPmGSZfLDw8PLz/xcuDwabZnyToszbYm+MCeHh4eB/Am7XN2vAzCxJ4eHh4n8ObtfY3ifWmvIuHh4d3m9cOkT/dFBcOtLjw8PDwLvDaBljbGGtLEm0p+XB/Dw8PD+/V938DEQnkKX6t6JYAAAAASUVORK5CYII=">分享</a><div class="tags"><a href="/tags/iOS/">iOS</a><a href="/tags/JSPatch/">JSPatch</a><a href="/tags/源码/">源码</a><a href="/tags/动态化/">动态化</a></div><div class="post-nav"><a class="pre" href="/2018/06/14/jspatch-sourcecode/">iOS 热更新解读（二）—— JSPatch 源码解析</a><a class="next" href="/2018/06/13/ios-android-transfer/">iPhone &amp; Android 换机通信方案分析</a></div><div id="lv-container" data-id="city" data-uid="MTAyMC8zNjkyMi8xMzQ1OA=="><script>(function(d, s) {
+   var j, e = d.getElementsByTagName(s)[0];
+   if (typeof LivereTower === 'function') { return; }
+   j = d.createElement(s);
+   j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+   j.async = true;
+   e.parentNode.insertBefore(j, e);
+})(document, 'script');
+</script></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="https://zltunes.github.io"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/web/">web</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/源码/" style="font-size: 15px;">源码</a> <a href="/tags/iOS/" style="font-size: 15px;">iOS</a> <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/换机/" style="font-size: 15px;">换机</a> <a href="/tags/Messages/" style="font-size: 15px;">Messages</a> <a href="/tags/通知/" style="font-size: 15px;">通知</a> <a href="/tags/JSPatch/" style="font-size: 15px;">JSPatch</a> <a href="/tags/iPhone/" style="font-size: 15px;">iPhone</a> <a href="/tags/动态化/" style="font-size: 15px;">动态化</a> <a href="/tags/rails/" style="font-size: 15px;">rails</a> <a href="/tags/web/" style="font-size: 15px;">web</a> <a href="/tags/ReactiveCocoa/" style="font-size: 15px;">ReactiveCocoa</a> <a href="/tags/ROS/" style="font-size: 15px;">ROS</a> <a href="/tags/机器人/" style="font-size: 15px;">机器人</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/06/15/rails-tutorial/">使用 rails 打造简洁的 web app</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/06/14/reactivecocoa-tutorial/">ReactiveCocoa 入门与登录实战</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/06/14/jspatch-swift/">iOS 热更新解读（三）—— JSPatch 之于 Swift</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/06/14/jspatch-sourcecode/">iOS 热更新解读（二）—— JSPatch 源码解析</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/06/14/jspatch-apatch&javascriptcore/">iOS 热更新解读（一）APatch & JavaScriptCore</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/06/13/ios-android-transfer/">iPhone & Android 换机通信方案分析</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/06/13/ios10-notification/">iOS 10 通知更新详解</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/06/13/ios10-messages-framework/">iOS 10 之 Messages framework</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/06/13/iosapp-certificate-signature/">iOS 程序证书及签名机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/06/13/robot-operating-system-intro/">机器人操作系统（ROS/Android）对比</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://dreampiggy.com/" title="小猪的博客" target="_blank">小猪的博客</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2018 <a href="/." rel="nofollow">zltunes.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.css"><script type="text/x-mathjax-config">MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+  });
+</script><script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
