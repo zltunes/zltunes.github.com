@@ -3,9 +3,10 @@
 
 
     
+    
   <url>
     <loc>https://zltunes.github.io/2018/06/14/jspatch-swift/</loc>
-    <lastmod>2018-06-19T03:22:38.983Z</lastmod>
+    <lastmod>2018-06-19T03:24:49.137Z</lastmod>
     <data>
         <display>
         <title>iOS 热更新解读（三）—— JSPatch 之于 Swift</title>
@@ -278,7 +279,6 @@
     </data>
     </url>
 
-    
     
     
 </urlset>

@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://zltunes.github.io/about/index.html</loc>
+    
+    <lastmod>2018-06-19T09:11:35.661Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://zltunes.github.io/2018/06/14/jspatch-swift/</loc>
     
-    <lastmod>2018-06-19T03:22:38.983Z</lastmod>
+    <lastmod>2018-06-19T03:24:49.137Z</lastmod>
     
   </url>
   
@@ -96,13 +103,6 @@
     <loc>https://zltunes.github.io/resume/index.html</loc>
     
     <lastmod>2018-06-07T08:15:06.644Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://zltunes.github.io/about/index.html</loc>
-    
-    <lastmod>2018-06-07T08:14:57.329Z</lastmod>
     
   </url>
   
