@@ -646,7 +646,9 @@ pre {
   background: #eee;
   top: -3%;
   right: -30px;
-  bottom: -3%; }
+  bottom: -3%;
+  margin-bottom: -18px;
+  margin-top: -28px; }
 
 #process .present,
 #process .born {
@@ -678,14 +680,14 @@ pre {
   position: absolute;
   top: -3%;
   right: 0;
-  margin-top: -20px;
+  margin-top: -50px;
   line-height: 100%; }
 
 #process .born {
   position: absolute;
   bottom: -3%;
   right: 0;
-  margin-bottom: -20px;
+  margin-bottom: -40px;
   line-height: 100%; }
 
 #process .dot_tp {
@@ -695,7 +697,7 @@ pre {
   background-color: transparent;
   height: 15px;
   width: 15px;
-  margin-top: -13px;
+  margin-top: -43px;
   -webkit-border-radius: 50%;
   -moz-border-radius: 50%;
   border-radius: 50%;
@@ -708,7 +710,7 @@ pre {
   background-color: transparent;
   height: 15px;
   width: 15px;
-  margin-bottom: -13px;
+  margin-bottom: -33px;
   -webkit-border-radius: 50%;
   -moz-border-radius: 50%;
   border-radius: 50%;
