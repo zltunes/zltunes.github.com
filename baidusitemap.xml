@@ -3,6 +3,26 @@
 
 
     
+  <url>
+    <loc>https://zltunes.github.io/2018/06/13/dynamic-height-cell/</loc>
+    <lastmod>2018-06-19T15:10:38.695Z</lastmod>
+    <data>
+        <display>
+        <title>TableView 动态 cell 高度自适应方案</title>
+        <pubTime>2018-06-13T13:22:17.085Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
     
   <url>
     <loc>https://zltunes.github.io/2018/06/14/jspatch-swift/</loc>
@@ -247,26 +267,6 @@
         <display>
         <title>为 ViewControllers 瘦身</title>
         <pubTime>2018-05-30T09:44:10.144Z</pubTime>
-        
-        <tag>iOS</tag>
-         
-         
-           
-             
-              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2018/06/13/dynamic-height-cell/</loc>
-    <lastmod>2018-06-14T03:39:31.845Z</lastmod>
-    <data>
-        <display>
-        <title>TableView 动态 cell 高度自适应方案</title>
-        <pubTime>2018-06-13T13:22:17.085Z</pubTime>
         
         <tag>iOS</tag>
          
