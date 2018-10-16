@@ -4,14 +4,98 @@
   <url>
     <loc>https://zltunes.github.io/work/index.html</loc>
     
-    <lastmod>2018-10-16T08:04:56.742Z</lastmod>
+    <lastmod>2018-10-16T09:11:18.730Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://zltunes.github.io/2018/06/13/robot-operating-system-intro/</loc>
+    
+    <lastmod>2018-10-16T09:11:09.284Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://zltunes.github.io/2018/06/14/reactivecocoa-tutorial/</loc>
+    
+    <lastmod>2018-10-16T09:11:08.022Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://zltunes.github.io/2018/06/15/rails-tutorial/</loc>
+    
+    <lastmod>2018-10-16T09:11:06.781Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://zltunes.github.io/2018/05/30/light-viewcontrollers/</loc>
+    
+    <lastmod>2018-10-16T09:11:05.483Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://zltunes.github.io/2018/06/14/jspatch-swift/</loc>
+    
+    <lastmod>2018-10-16T09:11:04.249Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://zltunes.github.io/2018/06/14/jspatch-sourcecode/</loc>
+    
+    <lastmod>2018-10-16T09:11:03.026Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://zltunes.github.io/2018/06/14/jspatch-apatch&javascriptcore/</loc>
+    
+    <lastmod>2018-10-16T09:11:01.787Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://zltunes.github.io/2018/06/13/iosapp-certificate-signature/</loc>
+    
+    <lastmod>2018-10-16T09:11:00.519Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://zltunes.github.io/2018/06/13/ios10-notification/</loc>
+    
+    <lastmod>2018-10-16T09:10:59.214Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://zltunes.github.io/2018/06/13/ios10-messages-framework/</loc>
+    
+    <lastmod>2018-10-16T09:10:57.711Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://zltunes.github.io/2018/06/13/ios-android-transfer/</loc>
+    
+    <lastmod>2018-10-16T09:10:56.455Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://zltunes.github.io/2018/06/13/dynamic-height-cell/</loc>
+    
+    <lastmod>2018-10-16T09:10:55.323Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://zltunes.github.io/2018/06/21/blockchain-tutorial/</loc>
     
-    <lastmod>2018-06-21T14:07:11.945Z</lastmod>
+    <lastmod>2018-10-16T09:10:53.194Z</lastmod>
     
   </url>
   
@@ -19,90 +103,6 @@
     <loc>https://zltunes.github.io/about/index.html</loc>
     
     <lastmod>2018-06-20T07:48:53.734Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://zltunes.github.io/2018/06/13/dynamic-height-cell/</loc>
-    
-    <lastmod>2018-06-19T15:10:38.695Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://zltunes.github.io/2018/06/14/jspatch-swift/</loc>
-    
-    <lastmod>2018-06-19T03:24:49.137Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://zltunes.github.io/2018/06/14/jspatch-apatch&javascriptcore/</loc>
-    
-    <lastmod>2018-06-19T03:16:30.920Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://zltunes.github.io/2018/06/14/jspatch-sourcecode/</loc>
-    
-    <lastmod>2018-06-19T03:16:30.250Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://zltunes.github.io/2018/06/15/rails-tutorial/</loc>
-    
-    <lastmod>2018-06-15T13:49:56.722Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://zltunes.github.io/2018/06/13/ios-android-transfer/</loc>
-    
-    <lastmod>2018-06-14T14:10:13.843Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://zltunes.github.io/2018/06/13/robot-operating-system-intro/</loc>
-    
-    <lastmod>2018-06-14T14:08:56.382Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://zltunes.github.io/2018/06/14/reactivecocoa-tutorial/</loc>
-    
-    <lastmod>2018-06-14T14:02:05.589Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://zltunes.github.io/2018/06/13/ios10-notification/</loc>
-    
-    <lastmod>2018-06-14T07:51:50.102Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://zltunes.github.io/2018/06/13/ios10-messages-framework/</loc>
-    
-    <lastmod>2018-06-14T07:43:10.835Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://zltunes.github.io/2018/06/13/iosapp-certificate-signature/</loc>
-    
-    <lastmod>2018-06-14T07:29:26.015Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://zltunes.github.io/2018/05/30/light-viewcontrollers/</loc>
-    
-    <lastmod>2018-06-14T03:56:53.182Z</lastmod>
     
   </url>
   
