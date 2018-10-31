@@ -4,6 +4,28 @@
 
     
   <url>
+    <loc>https://zltunes.github.io/2018/06/15/rails-tutorial/</loc>
+    <lastmod>2018-10-31T08:17:41.094Z</lastmod>
+    <data>
+        <display>
+        <title>rails 学习笔记</title>
+        <pubTime>2018-06-15T09:48:03.980Z</pubTime>
+        
+        <tag>rails</tag>
+         
+        <tag>web</tag>
+         
+         
+           
+             
+              <breadCrumb title="web" url="https://zltunes.github.io/categories/web/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://zltunes.github.io/2018/06/14/jspatch-swift/</loc>
     <lastmod>2018-10-31T08:11:22.907Z</lastmod>
     <data>
@@ -49,28 +71,6 @@
            
              
               <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2018/06/15/rails-tutorial/</loc>
-    <lastmod>2018-10-31T08:04:24.620Z</lastmod>
-    <data>
-        <display>
-        <title>使用 rails 打造简洁的 web app</title>
-        <pubTime>2018-06-15T09:48:03.980Z</pubTime>
-        
-        <tag>rails</tag>
-         
-        <tag>web</tag>
-         
-         
-           
-             
-              <breadCrumb title="web" url="https://zltunes.github.io/categories/web/"/>
           
         </display>
     </data>
