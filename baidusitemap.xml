@@ -3,6 +3,80 @@
 
 
     
+  <url>
+    <loc>https://zltunes.github.io/2018/06/15/rails-tutorial/</loc>
+    <lastmod>2018-10-31T07:55:06.193Z</lastmod>
+    <data>
+        <display>
+        <title>使用 rails 打造简洁的 web app</title>
+        <pubTime>2018-06-15T09:48:03.980Z</pubTime>
+        
+        <tag>rails</tag>
+         
+        <tag>web</tag>
+         
+         
+           
+             
+              <breadCrumb title="web" url="https://zltunes.github.io/categories/web/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2018/06/14/jspatch-sourcecode/</loc>
+    <lastmod>2018-10-31T07:54:36.817Z</lastmod>
+    <data>
+        <display>
+        <title>iOS 热更新解读（二）—— JSPatch 源码解析</title>
+        <pubTime>2018-06-14T09:17:30.359Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+        <tag>JSPatch</tag>
+         
+        <tag>源码</tag>
+         
+        <tag>动态化</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2018/06/14/jspatch-swift/</loc>
+    <lastmod>2018-10-31T07:54:27.822Z</lastmod>
+    <data>
+        <display>
+        <title>iOS 热更新解读（三）—— JSPatch 之于 Swift</title>
+        <pubTime>2018-06-14T09:17:30.392Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+        <tag>JSPatch</tag>
+         
+        <tag>源码</tag>
+         
+        <tag>动态化</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
     
   <url>
     <loc>https://zltunes.github.io/2018/06/13/robot-operating-system-intro/</loc>
@@ -51,28 +125,6 @@
 
     
   <url>
-    <loc>https://zltunes.github.io/2018/06/15/rails-tutorial/</loc>
-    <lastmod>2018-10-16T09:11:06.781Z</lastmod>
-    <data>
-        <display>
-        <title>使用 rails 打造简洁的 web app</title>
-        <pubTime>2018-06-15T09:48:03.980Z</pubTime>
-        
-        <tag>rails</tag>
-         
-        <tag>web</tag>
-         
-         
-           
-             
-              <breadCrumb title="web" url="https://zltunes.github.io/categories/web/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
     <loc>https://zltunes.github.io/2018/05/30/light-viewcontrollers/</loc>
     <lastmod>2018-10-16T09:11:05.483Z</lastmod>
     <data>
@@ -81,58 +133,6 @@
         <pubTime>2018-05-30T09:44:10.144Z</pubTime>
         
         <tag>iOS</tag>
-         
-         
-           
-             
-              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2018/06/14/jspatch-swift/</loc>
-    <lastmod>2018-10-16T09:11:04.249Z</lastmod>
-    <data>
-        <display>
-        <title>iOS 热更新解读（三）—— JSPatch 之于 Swift</title>
-        <pubTime>2018-06-14T09:17:30.392Z</pubTime>
-        
-        <tag>iOS</tag>
-         
-        <tag>JSPatch</tag>
-         
-        <tag>源码</tag>
-         
-        <tag>动态化</tag>
-         
-         
-           
-             
-              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2018/06/14/jspatch-sourcecode/</loc>
-    <lastmod>2018-10-16T09:11:03.026Z</lastmod>
-    <data>
-        <display>
-        <title>iOS 热更新解读（二）—— JSPatch 源码解析</title>
-        <pubTime>2018-06-14T09:17:30.359Z</pubTime>
-        
-        <tag>iOS</tag>
-         
-        <tag>JSPatch</tag>
-         
-        <tag>源码</tag>
-         
-        <tag>动态化</tag>
          
          
            
