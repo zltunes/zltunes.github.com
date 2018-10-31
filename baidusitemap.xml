@@ -4,21 +4,25 @@
 
     
   <url>
-    <loc>https://zltunes.github.io/2018/06/15/rails-tutorial/</loc>
-    <lastmod>2018-10-31T08:04:24.620Z</lastmod>
+    <loc>https://zltunes.github.io/2018/06/14/jspatch-swift/</loc>
+    <lastmod>2018-10-31T08:11:22.907Z</lastmod>
     <data>
         <display>
-        <title>使用 rails 打造简洁的 web app</title>
-        <pubTime>2018-06-15T09:48:03.980Z</pubTime>
+        <title>iOS 热更新解读（三）—— JSPatch 之于 Swift</title>
+        <pubTime>2018-06-14T09:17:30.392Z</pubTime>
         
-        <tag>rails</tag>
+        <tag>iOS</tag>
          
-        <tag>web</tag>
+        <tag>JSPatch</tag>
+         
+        <tag>源码</tag>
+         
+        <tag>动态化</tag>
          
          
            
              
-              <breadCrumb title="web" url="https://zltunes.github.io/categories/web/"/>
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
           
         </display>
     </data>
@@ -27,7 +31,7 @@
     
   <url>
     <loc>https://zltunes.github.io/2018/06/14/jspatch-sourcecode/</loc>
-    <lastmod>2018-10-31T07:54:36.817Z</lastmod>
+    <lastmod>2018-10-31T08:08:59.701Z</lastmod>
     <data>
         <display>
         <title>iOS 热更新解读（二）—— JSPatch 源码解析</title>
@@ -52,25 +56,21 @@
 
     
   <url>
-    <loc>https://zltunes.github.io/2018/06/14/jspatch-swift/</loc>
-    <lastmod>2018-10-31T07:54:27.822Z</lastmod>
+    <loc>https://zltunes.github.io/2018/06/15/rails-tutorial/</loc>
+    <lastmod>2018-10-31T08:04:24.620Z</lastmod>
     <data>
         <display>
-        <title>iOS 热更新解读（三）—— JSPatch 之于 Swift</title>
-        <pubTime>2018-06-14T09:17:30.392Z</pubTime>
+        <title>使用 rails 打造简洁的 web app</title>
+        <pubTime>2018-06-15T09:48:03.980Z</pubTime>
         
-        <tag>iOS</tag>
+        <tag>rails</tag>
          
-        <tag>JSPatch</tag>
-         
-        <tag>源码</tag>
-         
-        <tag>动态化</tag>
+        <tag>web</tag>
          
          
            
              
-              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+              <breadCrumb title="web" url="https://zltunes.github.io/categories/web/"/>
           
         </display>
     </data>
