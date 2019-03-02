@@ -5,10 +5,10 @@
     
   <url>
     <loc>https://zltunes.github.io/2018/06/15/rails-tutorial/</loc>
-    <lastmod>2018-10-31T08:17:41.094Z</lastmod>
+    <lastmod>2018-10-31T08:19:46.128Z</lastmod>
     <data>
         <display>
-        <title>rails 学习笔记</title>
+        <title>Ruby on Rails 学习笔记</title>
         <pubTime>2018-06-15T09:48:03.980Z</pubTime>
         
         <tag>rails</tag>
@@ -274,26 +274,6 @@
            
              
               <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2018/06/21/blockchain-tutorial/</loc>
-    <lastmod>2018-10-16T09:10:53.194Z</lastmod>
-    <data>
-        <display>
-        <title>区块链初探</title>
-        <pubTime>2018-06-21T13:53:47.900Z</pubTime>
-        
-        <tag>区块链</tag>
-         
-         
-           
-             
-              <breadCrumb title="区块链" url="https://zltunes.github.io/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/"/>
           
         </display>
     </data>
