@@ -1,0 +1,190 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>iOS 10 之 Messages framework | zltunes</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/8.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-dark.min.css"><link rel="stylesheet" type="text/css" href="/css/code-number.css?v=0.0.0"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script><script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><script type="text/javascript" src="/js/code-number.js?v=0.0.0"></script></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">iOS 10 之 Messages framework</h1><a id="logo" href="/.">zltunes</a><p class="description">赵磊的博客</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/work/"><i class="fa fa-building"> 项目</i></a><a href="/resume/resume.pdf"><i class="fa fa-file"> 简历</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">iOS 10 之 Messages framework</h1><div class="post-meta">Jun 13, 2018<span> | </span><span class="category"><a href="/categories/iOS/">iOS</a></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Messages-App-Store"><span class="toc-number">1.</span> <span class="toc-text">Messages App Store</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#基本表情包-Sticker-Packs"><span class="toc-number">2.</span> <span class="toc-text">基本表情包 (Sticker Packs)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#自定义表情包"><span class="toc-number">3.</span> <span class="toc-text">自定义表情包</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#自定义-APP"><span class="toc-number">4.</span> <span class="toc-text">自定义 APP</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#MSConversation"><span class="toc-number">4.1.</span> <span class="toc-text">MSConversation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MSMessage"><span class="toc-number">4.2.</span> <span class="toc-text">MSMessage</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#iMessage-App-LifeCycle"><span class="toc-number">5.</span> <span class="toc-text">iMessage App LifeCycle</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#启动过程"><span class="toc-number">5.1.</span> <span class="toc-text">启动过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#销毁过程"><span class="toc-number">5.2.</span> <span class="toc-text">销毁过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#唤起过程"><span class="toc-number">5.3.</span> <span class="toc-text">唤起过程</span></a></li></ol></li></ol></div></div><div class="post-content"><p>iMessage App 是一种全新的应用扩展，载体是 iOS 系统的 Message 应用，通过 iMessage App，用户可以发送更加丰富的消息内容，享受更具交互性的会话体验。<br>从 iOS 10 开始，消息扩展（Messages Extension）可以独立于宿主App(Container App) 开发，并提供了全新的消息模式。用户可以通过 Message 发送文本、表情包（sticker）、多媒体文件，以及其他可交互消息。<br><a id="more"></a></p>
+<h1 id="Messages-App-Store"><a href="#Messages-App-Store" class="headerlink" title="Messages App Store"></a>Messages App Store</h1><p><img src="http://ww2.sinaimg.cn/large/005tGCqhgw1f80b81p95wj309y024jrb.jpg" alt=""><br>Messages App Store 独立于之前的 App Store，只存在于系统的 Message 中，这里只显示 <strong>iMessage-related 应用</strong>。它可以干什么呢？</p>
+<ul>
+<li>显示iMessage App;</li>
+<li>为未安装应用的用户提供安装途径(Inline App Attribution);</li>
+<li>提供iap，Apple Pay和访问相机功能。<br><img src="http://ww3.sinaimg.cn/large/005tGCqhgw1f80bdctvjej30ku112wkv.jpg" alt=""></li>
+</ul>
+<p>iMessage App 可以独立开发（iOS 10之后），也可以作为 Extension 添加在现有项目中。</p>
+<ul>
+<li>在现有项目中添加：File-&gt;New-&gt;Target-&gt;Application Extension-&gt;Sticker Pack Extension/iMessage Extension</li>
+<li>独立开发：File-&gt;New-&gt;Project-&gt;Application-&gt;Sticker Pack Application/iMessage Application</li>
+</ul>
+<h1 id="基本表情包-Sticker-Packs"><a href="#基本表情包-Sticker-Packs" class="headerlink" title="基本表情包 (Sticker Packs)"></a>基本表情包 (Sticker Packs)</h1><p>Sticker 是 iOS 10 iMessage 引入的一种新的交互方式，可以当做消息发送，也可以附加在已有消息上。创建表情包不需要任何代码。图片文件需满足以下条件：</p>
+<ul>
+<li>图片格式：PNG, APNG, GIF, JPEG;</li>
+<li>文件大小：小于 500 KB;</li>
+<li>图片大小区间：[100 x 100,206 x 206]</li>
+</ul>
+<p>只需提供最大像素图片(@3x,[300 x 300,618 x 618])，系统会在需要的时候自动完成缩放。</p>
+<p>苹果建议的表情文件大小：</p>
+<ul>
+<li>Small: 100 x 100 pt @3x scale (300 x 300 pixel image)</li>
+<li>Medium: 136 x 136 pt @3x scale (378 x 378 pixel image)</li>
+<li>Large: 206 x 206 pt @3x scale (618 x 618 pixel image)</li>
+</ul>
+<p>打开 Xcode，创建新工程 BasicStickerPack：<em>File-&gt;New-&gt;Project-&gt;Application-&gt;Sticker Pack Application</em>。<br>左边侧栏有个<code>Stickers.xcstickers</code>，包含了iMessage APP的icon 和表情，添加一组图片。如果要更改表情包默认名称和大小，可在右侧Attributes inspector 中更改。<br><img src="http://ww1.sinaimg.cn/large/005tGCqhgw1f80c1a8yuuj31kw085mzu.jpg" alt=""><br>运行，表情包将在 Message 的 Message App Store 打开，点击任何一个表情即可添加到当前信息并发送：<br><img src="http://ww3.sinaimg.cn/large/005tGCqhgw1f80cwi8ozbj30ku112422.jpg" alt=""><br><img src="http://ww3.sinaimg.cn/large/005tGCqhgw1f80cdyjxegj30ku112dhr.jpg" alt=""></p>
+<h1 id="自定义表情包"><a href="#自定义表情包" class="headerlink" title="自定义表情包"></a>自定义表情包</h1><p>基本的表情应用程序提供的模板可能不完全满足需求，我们创建一个较复杂的表情包应用程序 CustomStickerPack，选择 iMessage Application 模版。<br><img src="http://ww2.sinaimg.cn/large/005tGCqhgw1f80d9jz8moj30ek0ik40n.jpg" alt=""><br>创建好的工程相比上面的 Sticker Pack Application 多了 MessagesExtension 文件夹。该文件夹包含四个部分：</p>
+<ul>
+<li>MessagesViewController.swift : iMessage app的程序入口;</li>
+<li>MainInterface.storyboard: 可视化操作;</li>
+<li>Assets.xcassets: 图片集合;</li>
+<li>Info.plist : 配置一些扩展信息;</li>
+</ul>
+<p><code>MessagesViewController</code>是 <code>MSMessagesAppViewController</code> 的子类，它是用来展示消息扩展(Message Extension)的界面。自定义 Sticker 需要自定义<code>MSStickerBrowserViewController</code>。<code>MSStickerBrowserViewController</code>是用来显示 Sticker 的，它有两个协议方法需要实现：</p>
+<pre><code class="Objective-C">@protocol MSStickerBrowserViewDataSource &lt;NSObject&gt;
+- (NSInteger)numberOfStickersInStickerBrowserView:(MSStickerBrowserView *)stickerBrowserView;//返回Sticker数量
+- (MSSticker *)stickerBrowserView:(MSStickerBrowserView *)stickerBrowserView stickerAtIndex:(NSInteger)index;//返回MSSticker对象
+</code></pre>
+<p><code>MSStickerBrowserViewController</code>用法跟<code>UITableViewDataSource</code>很像，有一个<code>stickerBrowserView</code>对象：</p>
+<pre><code class="Objective-C">@property (nonatomic, strong, readonly) MSStickerBrowserView *stickerBrowserView;
+</code></pre>
+<p>刷新数据，调用：</p>
+<pre><code class="Objective-C">[stickerBrowserView reloadData];
+</code></pre>
+<p>一张图说明一下上述几个对象的关系：<br><img src="http://upload-images.jianshu.io/upload_images/1415843-cc9571b08a155105.PNG?imageMogr2/auto-orient/strip%7CimageView2/2" alt=""><br>将 sticker 放入 MessagesExtension 文件夹，创建一个 <code>MSSticker</code> 数组存储表情包，并写一个加载表情包的方法：</p>
+<pre><code class="swift">var stickers = [MSSticker]()
+func loadStickers() {
+    for i in 1...2 {
+        if let url = Bundle.main.url(forResource: &quot;Sticker \(i)&quot;, withExtension: &quot;png&quot;){
+            do {
+                let sticker = try MSSticker(contentsOfFileURL: url, localizedDescription: &quot;&quot;)
+                stickers.append(sticker)
+            } catch {
+                print(error)
+            }
+        }
+    }
+}
+</code></pre>
+<p>实现<code>createStickerBrowser</code>方法, 初始化<code>MSStickerBrowserViewController</code>作为根视图, 并设置宽高约束:</p>
+<pre><code class="swift">func createStickerBrowser() {
+    let controller = MSStickerBrowserViewController(stickerSize: .large)
+
+    addChildViewController(controller)
+    view.addSubview(controller.view)
+
+    controller.stickerBrowserView.backgroundColor = UIColor.blue
+    controller.stickerBrowserView.dataSource = self
+
+    view.topAnchor.constraint(equalTo: controller.view.topAnchor).isActive = true
+    view.bottomAnchor.constraint(equalTo: controller.view.bottomAnchor).isActive = true
+    view.leftAnchor.constraint(equalTo: controller.view.leftAnchor).isActive = true
+    view.rightAnchor.constraint(equalTo: controller.view.rightAnchor).isActive = true
+}
+</code></pre>
+<p>实现<code>MSStickerBrowserViewDataSource</code>的代理方法：</p>
+<pre><code class="swift">func numberOfStickers(in stickerBrowserView: MSStickerBrowserView) -&gt; Int {
+    return stickers.count
+}
+
+func stickerBrowserView(_ stickerBrowserView: MSStickerBrowserView, stickerAt index: Int) -&gt; MSSticker {
+    return stickers[index]
+}
+</code></pre>
+<p><code>viewDidLoad</code> 中加载 sticker 、创建 MSStickerBrowserViewController：</p>
+<pre><code class="swift">override func viewDidLoad() {
+    super.viewDidLoad()
+
+    loadStickers()
+    createStickerBrowser()
+}
+</code></pre>
+<p>运行，跟上一个表情包差不多，但背景换成了自定义的颜色。<br><img src="http://ww2.sinaimg.cn/large/005tGCqhgw1f80dm1uafej30ku112q69.jpg" alt=""></p>
+<h1 id="自定义-APP"><a href="#自定义-APP" class="headerlink" title="自定义 APP"></a>自定义 APP</h1><p>本例将利用 iMessage App 创建一个独特的可交互消息。<br>创建 iMessage Application <code>MessageApp</code>，在<code>MainInterface.storyboard</code>添加一个 stepper 和 button：<br><img src="http://upload-images.jianshu.io/upload_images/326255-0dce497fdcdbe7d9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br>选择 stepper 打开 Attributes inspector, 改变最小最大值为0和10:<br><img src="http://upload-images.jianshu.io/upload_images/326255-bf8a7f349311fcb5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""><br>介绍几个关键对象：</p>
+<h2 id="MSConversation"><a href="#MSConversation" class="headerlink" title="MSConversation"></a>MSConversation</h2><p>指当前打开的会话，可以通过 MSConversation 插入消息。<br>在<code>MSMessagesAppViewController</code>中可以通过成员变量<code>activeConversatio</code>n获取当前的<code>MSConversation</code>，随后可调用以下方法插入不同的消息：</p>
+<pre><code class="swift">// 添加交互型消息.
+open func insert(_ message: MSMessage, completionHandler: (@escaping (Error?) -&gt; Swift.Void)? = nil)
+
+// 添加 sticker.
+open func insert(_ sticker: MSSticker, completionHandler: (@escaping (Error?) -&gt; Swift.Void)? = nil)
+
+// 添加文本.
+open func insertText(_ text: String, completionHandler: (@escaping (Error?) -&gt; Swift.Void)? = nil)
+
+// 添加多媒体（音视频）.
+open func insertAttachment(_ URL: URL, withAlternateFilename filename: String?, completionHandler: (@escaping (Error?) -&gt; Swift.Void)? = nil)
+</code></pre>
+<p><img src="http://upload-images.jianshu.io/upload_images/1415843-bb2627708998cfe4.PNG?imageMogr2/auto-orient/strip%7CimageView2/2" alt=""></p>
+<h2 id="MSMessage"><a href="#MSMessage" class="headerlink" title="MSMessage"></a>MSMessage</h2><p>代表单个消息体，包含两个部分：</p>
+<ul>
+<li><code>MSSession</code>：用来描述消息如何发送;</li>
+<li><code>MSMessageLayout</code>：用来描述消息如何展示。<br>在 iMessage 中自定义 MSMessage 必须要设置两个属性：<code>layout</code> 和 <code>url</code>。 url 是链接某个 web 页面的一些内容, 这样 MacOS 用户可以看到 iMessage 的内容。</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1415843-8f7716fc63e26aea.PNG?imageMogr2/auto-orient/strip%7CimageView2/2" alt=""></p>
+<p><code>MSMessageLayout</code>是一个抽象类，目前系统只提供了一种展现方法<code>MSMessageTemplateLayout</code>，里边有许多属性和空间用来自定义message;：<br><img src="https://docs-assets.developer.apple.com/published/af521ba258/MSMessageTemplateLayout_2x_93d9e9b7-b99c-4def-a8e1-2df50a710a52.png" alt=""><br> 左上角的空间是展示icon， 所有的属性都是可选的，提供任何标题字符串将摆脱底部部分的布局。<br>添加<code>createImageForMessage()</code>方法，将当前的stepper的数值显示到圆形的label中, 然后将label放在UIImage对象中。</p>
+<pre><code class="swift">func createImageForMessage() -&gt; UIImage? {
+    let background = UIView(frame: CGRect(x: 0, y: 0, width: 300, height: 300))
+    background.backgroundColor = UIColor.white
+
+    let label = UILabel(frame: CGRect(x: 75, y: 75, width: 150, height: 150))
+    label.font = UIFont.systemFont(ofSize: 56.0)
+    label.backgroundColor = UIColor.red
+    label.textColor = UIColor.white
+    label.text = &quot;\(Int(stepper.value))&quot;
+    label.textAlignment = .center
+    label.layer.cornerRadius = label.frame.size.width/2.0
+    label.clipsToBounds = true
+
+    background.addSubview(label)
+    background.frame.origin = CGPoint(x: view.frame.size.width, y: view.frame.size.height)
+    view.addSubview(background)
+
+    UIGraphicsBeginImageContextWithOptions(background.frame.size, false, UIScreen.main.scale)
+    background.drawHierarchy(in: background.bounds, afterScreenUpdates: true)
+    let image = UIGraphicsGetImageFromCurrentImageContext()
+    UIGraphicsEndImageContext()
+
+    background.removeFromSuperview()
+
+    return image
+}
+</code></pre>
+<p>设置 button 点击方法<code>didPress</code>，该方法中先创建message的布局, 并且设置 image 和 caption, 接着创建 MSMessage 对象并插入到会话中：</p>
+<pre><code class="swift">@IBAction func didPress(button sender: AnyObject) {
+    if let image = createImageForMessage(), let conversation = activeConversation {
+        let layout = MSMessageTemplateLayout()
+        layout.image = image
+        layout.caption = &quot;Stepper Value&quot;
+
+        let message = MSMessage()
+        message.layout = layout
+        message.url = URL(string: &quot;emptyURL&quot;)
+
+        conversation.insert(message, completionHandler: { (error) in
+            print(error)
+        })
+    }
+}
+</code></pre>
+<p>在这个例子中, 我们只是创建了简单的字符 url，如果用户点击该消息并且 url 是 http(s) 类型的，系统会通过浏览器打开相应的页面。<br>运行 App：<br><img src="http://ww1.sinaimg.cn/large/005tGCqhgw1f80fc9xq3ej30ku112td8.jpg" alt=""><br>点击 button 发送消息：<br><img src="http://ww2.sinaimg.cn/large/005tGCqhgw1f80fcp6fl0j30ku112q57.jpg" alt=""><br>stepper+2：<br><img src="http://ww2.sinaimg.cn/large/005tGCqhgw1f80fd9slruj30ku112mzf.jpg" alt=""></p>
+<h1 id="iMessage-App-LifeCycle"><a href="#iMessage-App-LifeCycle" class="headerlink" title="iMessage App LifeCycle"></a>iMessage App LifeCycle</h1><p>看下 iMessage App 的生命周期。</p>
+<h2 id="启动过程"><a href="#启动过程" class="headerlink" title="启动过程"></a>启动过程</h2><pre><code class="objc">// Message Extension启动。
+- (void)didBecomeActiveWithConversation:(MSConversation *)conversation;
+- (void)viewWillAppear:(BOOL)animated;
+- (void)viewDidAppear:(BOOL)animated;
+</code></pre>
+<h2 id="销毁过程"><a href="#销毁过程" class="headerlink" title="销毁过程"></a>销毁过程</h2><pre><code class="objc">- (void)viewWillDisappear:(BOOL)animated;
+- (void)viewDidDisappear:(BOOL)animated;
+- (void)willResignActiveWithConversation:(MSConversation *)conversation;
+// Message Extension被系统销毁。
+</code></pre>
+<h2 id="唤起过程"><a href="#唤起过程" class="headerlink" title="唤起过程"></a>唤起过程</h2><pre><code class="objc">-(void)willTransitionToPresentationStyle:(MSMessagesAppPresentationStyle)presentationStyle;
+-(void)didTransitionToPresentationStyle:(MSMessagesAppPresentationStyle)presentationStyle;
+</code></pre>
+<p>上面列出的回调方法均出现在<code>MSMessagesAppViewController</code>中，因此，iMessage App 的生命周期就是<code>MSMessagesAppViewController</code>的生命周期。</p>
+<blockquote>
+<p><a href="https://developer.apple.com/reference/messages" target="_blank" rel="noopener">官方文档 Messages Framework Reference</a><br><a href="https://developer.apple.com/videos/play/wwdc2016/204/" target="_blank" rel="noopener">WWDC Session1</a><br><a href="https://developer.apple.com/videos/play/wwdc2016/224/" target="_blank" rel="noopener">WWDC Session2</a><br><a href="https://developer.apple.com/library/prerelease/content/samplecode/IceCreamBuilder/Introduction/Intro.html" target="_blank" rel="noopener">官方 demo</a></p>
+</blockquote>
+</div><script type="text/javascript" src="/js/share.js?v=0.0.0" async></script><a class="article-share-link" data-url="https://zltunes.github.io/2018/06/13/ios10-messages-framework/" data-id="cjsrbh9ah000o3orkdjjdtvgd" data-qrcode="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACMUlEQVR42u3aS27DMAxF0ex/0+k4CCzfR8YFJF6PgsZVdDQg+NHrhZ/38iHvr1f+/q/XE48MGTK2ZZAtrv9+ta2rXyGY+PhkyJAxgMGX5oGVsGvvy5AhQwZn9ENn5/hkyJAhg2yIf0sO4l8DrgwZMjZkkCJ2vdCvStzHa3EZMmRsyOgnfM99fmS+IUOGjK0Y7/AhyV8auGs7+VhZhgwZRzN4gOs3yFAh2tmPDBkyjmaQ0jRNHGsF53oUGuxKhgwZBzFIy4y3w/ih8CYaGj/IkCFjAIOMJNNBZjrO5KH2MuDKkCHjaEaaIJJ2G08fa8POj88yZMg4mlFLCtdFKX8nTSWDKlyGDBmHMvgm0h5XOvjkjJvBgAwZMo5g8PKys6HamkFyKUOGjDGM9KoEafSnb6YXyFpzVxkyZGzF4K20X5GC9lmt/pYhQ8bRjE5TrDZCSMecN5ctZMiQcRyDl6A8gNaCL19ZhgwZkxlpEdtqkIVhen1AMmTImMMgDbKbhRpFLw/cl8ctQ4aMMQxSuNbSxP7nm3JahgwZAxhps4wMGGoBusiTIUPGSAYfedaK3s46xVmoDBkyNmS8w4ePCmqJY1y4ypAhYwCDP2TpuJVfurpRG3nKkCFjdwYPsrXNpdc10naeDBky5jDShj5B1i5e/KAWlyFDxnhG+m3tykVMlSFDhgxcuJJSlqSbPNGUIUPGHAYfBqQBsXallV/gkCFDxgRGWjpyTGc8SYKsDBkyBjD+AFv1DctMM926AAAAAElFTkSuQmCC">分享</a><div class="tags"><a href="/tags/iOS/">iOS</a><a href="/tags/Messages/">Messages</a></div><div class="post-nav"><a class="pre" href="/2018/06/13/ios10-notification/">iOS 10 通知更新详解</a><a class="next" href="/2018/06/13/iosapp-certificate-signature/">iOS 程序证书及签名机制</a></div><div id="lv-container" data-id="city" data-uid="MTAyMC8zNjkyMi8xMzQ1OA=="><script>(function(d, s) {
+   var j, e = d.getElementsByTagName(s)[0];
+   if (typeof LivereTower === 'function') { return; }
+   j = d.createElement(s);
+   j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+   j.async = true;
+   e.parentNode.insertBefore(j, e);
+})(document, 'script');
+</script></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="https://zltunes.github.io"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/web/">web</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/sourcecode/" style="font-size: 15px;">源码</a> <a href="/tags/iOS/" style="font-size: 15px;">iOS</a> <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/swichphone/" style="font-size: 15px;">换机</a> <a href="/tags/notification/" style="font-size: 15px;">通知</a> <a href="/tags/Messages/" style="font-size: 15px;">Messages</a> <a href="/tags/JSPatch/" style="font-size: 15px;">JSPatch</a> <a href="/tags/iPhone/" style="font-size: 15px;">iPhone</a> <a href="/tags/dynamic/" style="font-size: 15px;">动态化</a> <a href="/tags/rails/" style="font-size: 15px;">rails</a> <a href="/tags/web/" style="font-size: 15px;">web</a> <a href="/tags/ReactiveCocoa/" style="font-size: 15px;">ReactiveCocoa</a> <a href="/tags/ROS/" style="font-size: 15px;">ROS</a> <a href="/tags/robot/" style="font-size: 15px;">机器人</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://dreampiggy.com/" title="小猪的博客" target="_blank">小猪的博客</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">zltunes.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.css"><script type="text/x-mathjax-config">MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+  });
+</script><script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

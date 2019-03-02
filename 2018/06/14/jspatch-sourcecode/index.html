@@ -1,0 +1,1007 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>iOS 热更新解读（二）—— JSPatch 源码解析 | zltunes</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/8.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-dark.min.css"><link rel="stylesheet" type="text/css" href="/css/code-number.css?v=0.0.0"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script><script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><script type="text/javascript" src="/js/code-number.js?v=0.0.0"></script></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">iOS 热更新解读（二）—— JSPatch 源码解析</h1><a id="logo" href="/.">zltunes</a><p class="description">赵磊的博客</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/work/"><i class="fa fa-building"> 项目</i></a><a href="/resume/resume.pdf"><i class="fa fa-file"> 简历</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">iOS 热更新解读（二）—— JSPatch 源码解析</h1><div class="post-meta">Jun 14, 2018<span> | </span><span class="category"><a href="/categories/iOS/">iOS</a></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#JSPatch-使用流程"><span class="toc-number">1.</span> <span class="toc-text">JSPatch 使用流程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#修复-step-1：startEngine"><span class="toc-number">2.</span> <span class="toc-text">修复 step 1：startEngine</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#修复-step-2：-c-元函数"><span class="toc-number">3.</span> <span class="toc-text">修复 step 2：__c()元函数</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#修复-step-3：global-defineClass"><span class="toc-number">4.</span> <span class="toc-text">修复 step 3：global.defineClass</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#修复-step-4：-OC-defineClass"><span class="toc-number">5.</span> <span class="toc-text">修复 step 4：_OC_defineClass</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#调用-step-2：callSelector"><span class="toc-number">6.</span> <span class="toc-text">调用 step 2：callSelector</span></a></li></ol></div></div><div class="post-content"><p>了解了 JavaScriptCore 的使用方式，本篇从 demo 入手对 JSPatch 关键源码进行解读。<br><a id="more"></a></p>
+<p>关于 JSPatch 的实现原理，JSPatch 作者本人 <a href="http://blog.cnbang.net/" target="_blank" rel="noopener">bang</a> 已经有一系列文章阐述:</p>
+<ul>
+<li><a href="http://mp.weixin.qq.com/s?__biz=MzIzNTQ2MDg2Ng==&amp;mid=2247483662&amp;idx=1&amp;sn=c7d9ee27eff35688180bdc840d31120b&amp;scene=4#wechat_redirect" target="_blank" rel="noopener">JSPatch 实现原理详解 &lt;一&gt; 核心</a></li>
+<li><a href="http://mp.weixin.qq.com/s?__biz=MzIzNTQ2MDg2Ng==&amp;mid=2247483662&amp;idx=2&amp;sn=44b62a84a122886b08874861df83d889&amp;scene=4#wechat_redirect" target="_blank" rel="noopener">JSPatch 实现原理详解 &lt;二&gt; 细节</a></li>
+<li><a href="http://mp.weixin.qq.com/s?__biz=MzIzNTQ2MDg2Ng==&amp;mid=2247483662&amp;idx=3&amp;sn=9af2403895ff8e09bd7b7d767a34dd5e&amp;scene=4#wechat_redirect" target="_blank" rel="noopener">JSPatch 实现原理详解 &lt;三&gt; 扩展</a></li>
+<li><a href="http://mp.weixin.qq.com/s?__biz=MzIzNTQ2MDg2Ng==&amp;mid=2247483662&amp;idx=4&amp;sn=03f7fcdb54ebc8cc49995bf690292ebb&amp;scene=4#wechat_redirect" target="_blank" rel="noopener">JSPatch 实现原理详解 &lt;四&gt; 新特性</a></li>
+<li><a href="http://mp.weixin.qq.com/s?__biz=MzIzNTQ2MDg2Ng==&amp;mid=2247483662&amp;idx=5&amp;sn=22c304b6534b17c2ef36ee0afaa7576e&amp;scene=4#wechat_redirect" target="_blank" rel="noopener">JSPatch 实现原理详解 &lt;五&gt; 优化</a></li>
+</ul>
+<p>这些文章是对 JSPatch 内部实现原理和细节诸如“require实现”、“property实现”、“self/super 关键字”、“nil处理”、“内存问题”等具体设计思路和解决方案的阐述，并没有对 JSPatch 源码进行解读。在未接触源码、不清楚整个热修复流程的情况下去读这几篇文章难免一头雾水，最好的方法是边读源码边对照上述文章，代码中不理解的地方可以去文章中寻找答案。<br>本文将从一个小demo入手，跟踪代码执行流程，从Cocoa层、JavaScript层、Native层对热修复流程中涉及到的重要步骤和函数进行解析。</p>
+<h1 id="JSPatch-使用流程"><a href="#JSPatch-使用流程" class="headerlink" title="JSPatch 使用流程"></a>JSPatch 使用流程</h1><p>引入JSPatch，JSPatch 核心部分只有三个文件，十分精巧：<br><img src="https://ww1.sinaimg.cn/large/005YhI8igy1fwa5yc63m9j30f0052wei" alt=""><br>建立一个小demo，在<code>ViewController</code>屏幕中央放置一个button，button 点击事件为空:</p>
+<pre><code class="Objective-C">// in ViewController.m -----------------
+- (IBAction)handle:(id)sender {
+
+}
+</code></pre>
+<p>热修复js文件（main.js）内容就是添加这个点击事件（弹出一个<code>AlertView</code>）：</p>
+<pre><code class="JavaScript">// in main.js ------------------------
+defineClass(&#39;ViewController&#39;, {
+  handle: function(sender) {
+    require(&#39;UIAlertView&#39;);
+    var alert = UIAlertView.alloc().initWithTitle_message_delegate_cancelButtonTitle_otherButtonTitles(&quot;alert&quot;, null, null, &quot;ok&quot;, null, null);
+    alert.show();
+  }
+})
+</code></pre>
+<blockquote>
+<p>js 文件编写方法查看<a href="https://github.com/bang590/JSPatch/wiki/JSPatch-%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95" target="_blank" rel="noopener">JSPatch 基础用法</a>。</p>
+</blockquote>
+<p><code>didFinishLaunchingWithOptions:</code>中开启 JSPatch 引擎、执行 js 脚本：</p>
+<pre><code class="Objective-C">- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+
+    // 开启 JPEngine.
+    [JPEngine startEngine];
+
+    NSString *sourcePath = [[NSBundle mainBundle] pathForResource:@&quot;main&quot; ofType:@&quot;js&quot;];
+    NSString *script = [NSString stringWithContentsOfFile:sourcePath encoding:NSUTF8StringEncoding error:nil];
+
+    // 执行js脚本代码.
+    [JPEngine evaluateScript:script];
+
+    return YES;
+}
+</code></pre>
+<p>修复成功！<br><img src="https://ww1.sinaimg.cn/large/005YhI8igy1fwrgwu4hoqj30hu0rigml" alt=""></p>
+<h1 id="修复-step-1：startEngine"><a href="#修复-step-1：startEngine" class="headerlink" title="修复 step 1：startEngine"></a>修复 step 1：startEngine</h1><pre><code class="Objective-C">[JPEngine startEngine];
+</code></pre>
+<p>该方法向<code>JSContext</code>环境注册了一系列供js调用oc方法的block，这些 block 内部大多是 调用 <code>runtime</code> 相关接口的 static 函数。最终读取<code>JSPatch.js</code>中的代码到<code>JSContext</code>环境，使得<code>main.js</code>可以调用<code>JSPatch.js</code>中定义的方法。<br>调用关系大致如下：</p>
+<pre><code>main.js ---&gt;  JSPatch.js ---&gt; OC Block ---&gt; runtime 
+</code></pre><p><strong>源码解读：</strong></p>
+<pre><code class="Objective-C">+ (void)startEngine
+{
+
+//    1.判断是否存在 JSContext 类. ---&gt; iOS 7.0 以下不支持 JavaScriptCore
+    if (![JSContext class] || _context) {
+        return;
+    }
+
+//    2.创建一个 JS 运行环境.
+    JSContext *context = [[JSContext alloc] init];
+
+//    3.为了使 JSPatch.js 可以访问 JPEngine 中定义的 C 函数，需为 context 注册 block.
+
+//    3.1 创建类.
+    context[@&quot;_OC_defineClass&quot;] = ^(NSString *classDeclaration, JSValue *instanceMethods, JSValue *classMethods) {
+        return defineClass(classDeclaration, instanceMethods, classMethods);
+    };
+
+//    3.2 给类实现某协议.
+    context[@&quot;_OC_defineProtocol&quot;] = ^(NSString *protocolDeclaration, JSValue *instProtocol, JSValue *clsProtocol) {
+        return defineProtocol(protocolDeclaration, instProtocol,clsProtocol);
+    };
+
+//    3.3 js调用oc的实例方法.
+    context[@&quot;_OC_callI&quot;] = ^id(JSValue *obj, NSString *selectorName, JSValue *arguments, BOOL isSuper) {
+        return callSelector(nil, selectorName, arguments, obj, isSuper);
+    };
+
+//    3.4 js调用oc的类方法.
+    context[@&quot;_OC_callC&quot;] = ^id(NSString *className, NSString *selectorName, JSValue *arguments) {
+        return callSelector(className, selectorName, arguments, nil, NO);
+    };
+
+//    3.5 js 对象转 oc 对象.
+    context[@&quot;_OC_formatJSToOC&quot;] = ^id(JSValue *obj) {
+        return formatJSToOC(obj);
+    };
+
+//    3.6 oc 对象 转 js 对象.
+    context[@&quot;_OC_formatOCToJS&quot;] = ^id(JSValue *obj) {
+        return formatOCToJS([obj toObject]);
+    };
+
+//    3.7 获取对象的动态成员变量.
+    context[@&quot;_OC_getCustomProps&quot;] = ^id(JSValue *obj) {
+        id realObj = formatJSToOC(obj);
+        return objc_getAssociatedObject(realObj, kPropAssociatedObjectKey);
+    };
+
+//    3.8 给对象动态添加成员变量.
+    context[@&quot;_OC_setCustomProps&quot;] = ^(JSValue *obj, JSValue *val) {
+        id realObj = formatJSToOC(obj);
+        objc_setAssociatedObject(realObj, kPropAssociatedObjectKey, val, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    };
+
+//    3.9 给 js 对象设置 weak.
+    context[@&quot;__weak&quot;] = ^id(JSValue *jsval) {
+        id obj = formatJSToOC(jsval);
+        return [[JSContext currentContext][@&quot;_formatOCToJS&quot;] callWithArguments:@[formatOCToJS([JPBoxing boxWeakObj:obj])]];
+    };
+
+//    3.10 给 js 对象设置 strong.
+    context[@&quot;__strong&quot;] = ^id(JSValue *jsval) {
+        id obj = formatJSToOC(jsval);
+        return [[JSContext currentContext][@&quot;_formatOCToJS&quot;] callWithArguments:@[formatOCToJS(obj)]];
+    };
+
+//    3.11 获取 oc 对象超类.
+    context[@&quot;_OC_superClsName&quot;] = ^(NSString *clsName) {
+        Class cls = NSClassFromString(clsName);
+        return NSStringFromClass([cls superclass]);
+    };
+
+//    3.12 是否自动转换类型.
+    context[@&quot;autoConvertOCType&quot;] = ^(BOOL autoConvert) {
+        _autoConvert = autoConvert;
+    };
+
+//    3.13 oc number 转换为 string.
+    context[@&quot;convertOCNumberToString&quot;] = ^(BOOL convertOCNumberToString) {
+        _convertOCNumberToString = convertOCNumberToString;
+    };
+
+//    3.14 在JS中调用include方法,可以在一个JS文件中加载其他JS文件.
+    context[@&quot;include&quot;] = ^(NSString *filePath) {
+        NSString *absolutePath = [_scriptRootDir stringByAppendingPathComponent:filePath];
+        if (!_runnedScript) {
+            _runnedScript = [[NSMutableSet alloc] init];
+        }
+        if (absolutePath &amp;&amp; ![_runnedScript containsObject:absolutePath]) {
+            [JPEngine _evaluateScriptWithPath:absolutePath];
+            [_runnedScript addObject:absolutePath];
+        }
+    };
+
+//    3.15 获取资源文件路径.
+    context[@&quot;resourcePath&quot;] = ^(NSString *filePath) {
+        return [_scriptRootDir stringByAppendingPathComponent:filePath];
+    };
+
+//    3.16 让 js 方法延迟执行.
+    context[@&quot;dispatch_after&quot;] = ^(double time, JSValue *func) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(time * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [func callWithArguments:nil];
+        });
+    };
+
+//    3.17 让js方法在 main queue dispatch async 执行.
+    context[@&quot;dispatch_async_main&quot;] = ^(JSValue *func) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [func callWithArguments:nil];
+        });
+    };
+
+//    3.18 让js方法在 main queue dispatch sync 执行.
+    context[@&quot;dispatch_sync_main&quot;] = ^(JSValue *func) {
+        if ([NSThread currentThread].isMainThread) {
+            [func callWithArguments:nil];
+        } else {
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                [func callWithArguments:nil];
+            });
+        }
+    };
+
+//    3.19 让js方法在 global queue dispatch async 执行.
+    context[@&quot;dispatch_async_global_queue&quot;] = ^(JSValue *func) {
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            [func callWithArguments:nil];
+        });
+    };
+
+//    3.20 释放js创建的oc对象.
+    context[@&quot;releaseTmpObj&quot;] = ^void(JSValue *jsVal) {
+        if ([[jsVal toObject] isKindOfClass:[NSDictionary class]]) {
+            void *pointer =  [(JPBoxing *)([jsVal toObject][@&quot;__obj&quot;]) unboxPointer];
+            id obj = *((__unsafe_unretained id *)pointer);
+            @synchronized(_TMPMemoryPool) {
+                [_TMPMemoryPool removeObjectForKey:[NSNumber numberWithInteger:[(NSObject*)obj hash]]];
+            }
+        }
+    };
+
+//    3.21 js调用oc方法进行打印.
+    context[@&quot;_OC_log&quot;] = ^() {
+        NSArray *args = [JSContext currentArguments];
+        for (JSValue *jsVal in args) {
+            id obj = formatJSToOC(jsVal);
+            NSLog(@&quot;JSPatch.log: %@&quot;, obj == _nilObj ? nil : (obj == _nullObj ? [NSNull null]: obj));
+        }
+    };
+
+//    3.22 将js捕捉到的异常交给oc方法处理.
+    context[@&quot;_OC_catch&quot;] = ^(JSValue *msg, JSValue *stack) {
+        _exceptionBlock([NSString stringWithFormat:@&quot;js exception, \nmsg: %@, \nstack: \n %@&quot;, [msg toObject], [stack toObject]]);
+    };
+
+//    4. 注册 JSContext 执行出现异常时的回调.
+    context.exceptionHandler = ^(JSContext *con, JSValue *exception) {
+        NSLog(@&quot;%@&quot;, exception);
+        _exceptionBlock([NSString stringWithFormat:@&quot;js exception: %@&quot;, exception]);
+    };
+
+//    5. 创建OC中的null对象，转换成js的null对象，并设置到JSContext实例让js代码可以获取.
+    _nullObj = [[NSObject alloc] init];
+    context[@&quot;_OC_null&quot;] = formatOCToJS(_nullObj);
+
+//    6. 保存 context.
+    _context = context;
+
+//    7. oc 中的 nil 对象.
+    _nilObj = [[NSObject alloc] init];
+
+//    8. 同步锁.
+    _JSMethodSignatureLock = [[NSLock alloc] init];
+    _JSMethodForwardCallLock = [[NSRecursiveLock alloc] init];
+
+//    9. 在 JSPatch 中注册过的结构体定义（键：结构体名）.
+    _registeredStruct = [[NSMutableDictionary alloc] init];
+
+//    10. 注册内存警告通知.
+#if TARGET_OS_IPHONE
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleMemoryWarning) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
+#endif
+
+//    11. 读取JSPatch.js，方便传入的js代码中使用JSPatch.js提供的函数.
+    NSString *path = [[NSBundle bundleForClass:[self class]] pathForResource:@&quot;JSPatch&quot; ofType:@&quot;js&quot;];
+    if (!path) _exceptionBlock(@&quot;can&#39;t find JSPatch.js&quot;);
+    NSString *jsCore = [[NSString alloc] initWithData:[[NSFileManager defaultManager] contentsAtPath:path] encoding:NSUTF8StringEncoding];
+
+//    12. 加载 JSPatch.js 中的所有 js 代码到JSContext.
+    if ([_context respondsToSelector:@selector(evaluateScript:withSourceURL:)]) {
+        [_context evaluateScript:jsCore withSourceURL:[NSURL URLWithString:@&quot;JSPatch.js&quot;]];
+    } else {
+        [_context evaluateScript:jsCore];
+    }
+}
+</code></pre>
+<p>一张图总结 JSPatch 的功能结构：<br><img src="https://ww1.sinaimg.cn/large/005YhI8igy1fwrgx6km6jj31g20oejvf" alt=""></p>
+<h1 id="修复-step-2：-c-元函数"><a href="#修复-step-2：-c-元函数" class="headerlink" title="修复 step 2：__c()元函数"></a>修复 step 2：__c()元函数</h1><p>接下来读取<code>main.js</code>代码后执行：</p>
+<pre><code class="Objective-C">[JPEngine evaluateScript:script];
+</code></pre>
+<p>该接口并非直接将<code>main.js</code>代码提交到<code>JSContext</code>环境执行，而是先调用<code>_evaluateScript: withSourceURL:</code>方法对<code>main.js</code>原始代码做些修改。<br><strong>源码解读：</strong></p>
+<pre><code class="Objective-C">+ (JSValue *)_evaluateScript:(NSString *)script withSourceURL:(NSURL *)resourceURL
+{
+//    1. script 不存在或当前 iOS 版本低于 7.0 退出.
+    if (!script || ![JSContext class]) {
+        _exceptionBlock(@&quot;script is nil&quot;);
+        return nil;
+    }
+    [self startEngine];
+
+//    2. 正则式构建 (?&lt;!\\\\)\\.\\s*(\\w+)\\s*\\(
+    if (!_regex) {
+        _regex = [NSRegularExpression regularExpressionWithPattern:_regexStr options:0 error:nil];
+    }
+
+//    3. 使用正则式处理 传入的 js代码 &gt;&gt;&gt; 将 alloc()这样的函数调用 替换成 __c(&quot;alloc&quot;)()
+    NSString *formatedScript = [NSString stringWithFormat:@&quot;;(function(){try{%@}catch(e){_OC_catch(e.message, e.stack)}})();&quot;, [_regex stringByReplacingMatchesInString:script options:0 range:NSMakeRange(0, script.length) withTemplate:_replaceStr]];
+
+//    4.将正则处理后的js代码加载到 context 执行.(进入 JavaScriptCore)
+    @try {
+        if ([_context respondsToSelector:@selector(evaluateScript:withSourceURL:)]) {
+            return [_context evaluateScript:formatedScript withSourceURL:resourceURL];
+        } else {
+            return [_context evaluateScript:formatedScript];
+        }
+    }
+    @catch (NSException *exception) {
+        _exceptionBlock([NSString stringWithFormat:@&quot;%@&quot;, exception]);
+    }
+    return nil;
+}
+</code></pre>
+<p>断点调试看一下<code>script</code>经正则处理之后的结果：</p>
+<pre><code class="JavaScript">;(function(){try{defineClass(&#39;ViewController&#39;, {
+  pushAlertView: function(sender) {
+    require(&#39;UIAlertView&#39;);
+    var alert = UIAlertView.__c(&quot;alloc&quot;)().__c(&quot;initWithTitle_message_delegate_cancelButtonTitle_otherButtonTitles&quot;)(&quot;alert&quot;, null, null, &quot;ok&quot;, null, null);
+    alert.__c(&quot;show&quot;)();
+  }
+})}catch(e){_OC_catch(e.message, e.stack)}})();
+</code></pre>
+<p>除了添加一些关键字和异常处理外，最大的变化在于所有函数调用变成了<code>__c(&quot;function&quot;)</code>的形式。据作者讲这是<code>JSPatch</code>开发过程中最核心的问题，该问题的解决方案也是<code>JSPatch</code>中最精妙之处。<br>我们进行热修复期望的效果是这样：<br><img src="https://ww1.sinaimg.cn/large/005YhI8igy1fwrgxnadadj307008u75a" alt=""><br>但JS 对于调用没定义的属性/变量，只会马上抛出异常，而不像 OC/Lua/ruby 那样有转发机制。因此对于用户传入的js代码中，类似<code>UIView().alloc().init()</code>这样的代码，js其实根本没办法进行处理。<br><img src="https://ww1.sinaimg.cn/large/005YhI8igy1fwrgxwfj9fj30dx01zgma" alt=""><br>一种解决方案是实现所有js类继承机制，每一个类和方法都事先定义好：<br><img src="https://ww1.sinaimg.cn/large/005YhI8igy1fwrgy4x9ovj30hg0403zr" alt=""><br>这种方案是不太现实的，为了调用某个方法需要把该类的所有方法都引进来，占用内存极高（<code>NSObject</code>类有将近1000个方法）。</p>
+<p>作者最终想出了第二种方案：</p>
+<blockquote>
+<p>在 OC 执行 JS 脚本前，通过正则把所有方法调用都改成调用 __c() 函数，再执行这个 JS 脚本，做到了类似 OC/Lua/Ruby 等的消息转发机制。</p>
+</blockquote>
+<pre><code class="JavaScript">UIView.alloc().init()
+-&gt;
+UIView.__c(&#39;alloc&#39;)().__c(&#39;init&#39;)()
+</code></pre>
+<p><img src="https://ww1.sinaimg.cn/large/005YhI8igy1fwrgyd3gl2j30cf0b6dhf" alt=""><br>给 JS 对象基类 Object 的 <code>prototype</code> 加上 c 成员，这样所有对象都可以调用到 c，根据当前对象类型判断进行不同操作：</p>
+<pre><code class="JavaScript">__c: function(methodName) {
+      ...
+      ...
+      return function(){
+        var args = Array.prototype.slice.call(arguments)
+        return _methodFunc(slf.__obj, slf.__clsName, methodName, args, slf.__isSuper)
+      }
+    }
+</code></pre>
+<p><code>_methodFunc()</code> 把相关信息传给OC，OC用 Runtime 接口调用相应方法，返回结果值，这个调用就结束了。<br><strong>源码解读：</strong></p>
+<pre><code class="JavaScript"> /**
+   *  instance: 对象
+   *  clsName: 类名
+   *  methodName: 方法名
+   *  args: 参数列表
+   *  isSuper: 是否调用super父类的方法
+   *  isPerformSelector:是否用performSelector方式调用
+   */
+  var _methodFunc = function(instance, clsName, methodName, args, isSuper, isPerformSelector) {
+    var selectorName = methodName
+    if (!isPerformSelector) {
+
+//  不是 performSelector方式的方法调用流程
+//  处理得到OC中的方法SEL
+      methodName = methodName.replace(/__/g, &quot;-&quot;)
+      selectorName = methodName.replace(/_/g, &quot;:&quot;).replace(/-/g, &quot;_&quot;)
+      var marchArr = selectorName.match(/:/g)
+      var numOfArgs = marchArr ? marchArr.length : 0
+      if (args.length &gt; numOfArgs) {
+        selectorName += &quot;:&quot;
+      }
+    }
+
+//  获取调用OC方法后的返回值
+//  如果是获取一个OC对象，那么ret = {&quot;__obj&quot;:OC对象},因为OC把对象返回给js之前会先包装成NSDictionary
+    var ret = instance ? _OC_callI(instance, selectorName, args, isSuper):
+                         _OC_callC(clsName, selectorName, args)
+
+//  获取OC方法执行完毕的返回值，并转化成JS对象
+    return _formatOCToJS(ret)
+  }
+</code></pre>
+<h1 id="修复-step-3：global-defineClass"><a href="#修复-step-3：global-defineClass" class="headerlink" title="修复 step 3：global.defineClass"></a>修复 step 3：global.defineClass</h1><p>原脚本代码经过正则处理后交由<code>JSContext</code>环境去执行：</p>
+<pre><code class="Objective-C">[_context evaluateScript:formatedScript withSourceURL:resourceURL];
+</code></pre>
+<p>回过头看<code>main.js</code>的代码（处理后的）：</p>
+<pre><code class="JavaScript">defineClass(`ViewController`,{instaceMethods...},{classMethods...})
+</code></pre>
+<p>参数依次为类名、实例方法列表、类方法列表。阅读<code>global.defineClass</code>源码会发现<code>defineClass</code>首先会分别对两个方法列表调用<code>_formatDefineMethods</code>，该方法参数有三个：方法列表（js对象）、空js对象、真实类名：</p>
+<pre><code class="Javascript">  var _formatDefineMethods = function(methods, newMethods, realClsName) {
+    for (var methodName in methods) {
+      if (!(methods[methodName] instanceof Function)) return;
+      (function(){
+        var originMethod = methods[methodName]
+        newMethods[methodName] = [originMethod.length, function() {
+          try {
+            var args = _formatOCToJS(Array.prototype.slice.call(arguments))
+            var lastSelf = global.self
+            global.self = args[0]
+            if (global.self) global.self.__realClsName = realClsName
+            args.splice(0,1)
+            var ret = originMethod.apply(originMethod, args)
+            global.self = lastSelf
+            return ret
+          } catch(e) {
+            _OC_catch(e.message, e.stack)
+          }
+        }]
+      })()
+    }
+  }
+</code></pre>
+<p>该段代码遍历方法列表对象的方法名，向js空对象中添加属性：方法名为键，一个数组为值。数组第一个元素为对应实现函数的参数个数，第二个元素是方法的具体实现。也就是说，<code>_formatDefineMethods</code>将 <code>defineClass</code>传递过来的js对象进行了修改：</p>
+<pre><code class="JavaScript">{
+    methodName:function(args...){...}
+}
+--&gt;
+{
+    methodName:[argCount,function(args...){...新实现}]
+}
+</code></pre>
+<p><strong><em>1. 为什么要传递参数个数？</em></strong><br>因为<code>runtime</code>修复类的时候无法直接解析js实现函数，也就无法知道参数个数，但方法替换的过程需要生成方法签名，所以只能从js端拿到js函数的参数个数，并传递给OC。</p>
+<p><strong><em>2. 为什么要修改方法实现？</em></strong></p>
+<ul>
+<li>参数转化为js对象。这涉及到对象生命周期的管理，具体查看<a href="http://mp.weixin.qq.com/s?__biz=MzIzNTQ2MDg2Ng==&amp;mid=2247483662&amp;idx=1&amp;sn=c7d9ee27eff35688180bdc840d31120b&amp;scene=4#wechat_redirect" target="_blank" rel="noopener">&lt;实现原理一&gt;</a>4.对象持有／转换。</li>
+<li>self 处理。使得js修复代码中我们可以像在 OC 中一样使用self，具体查看<a href="http://mp.weixin.qq.com/s?__biz=MzIzNTQ2MDg2Ng==&amp;mid=2247483662&amp;idx=1&amp;sn=c7d9ee27eff35688180bdc840d31120b&amp;scene=4#wechat_redirect" target="_blank" rel="noopener">&lt;实现原理一&gt;</a>6.self 关键字。</li>
+<li><code>args.splice(0,1)</code>删除前两个参数：<br>OC中进行消息转发，前两个参数是<code>self</code>和<code>selector</code>，实际调用js的具体实现的时候，需要把这两个参数删除。</li>
+</ul>
+<p>我们可以使用 safari 对 JSPatch.js 进行调试（<a href="https://github.com/bang590/JSPatch/wiki/JS-%E6%96%AD%E7%82%B9%E8%B0%83%E8%AF%95" target="_blank" rel="noopener">JS 断点调试</a>）看看处理之后的<code>newInstMethods</code>：<br><img src="https://ww1.sinaimg.cn/large/005YhI8igy1fwrgyn54lfj30r80opn5m" alt=""></p>
+<p>回到<code>defineClass</code>，调用<code>_formatDefineMethods</code>之后，拿着要重写的类名和经过处理的js对象，调用<code>_OC_defineClass</code>，也就是OC端定义的block方法。</p>
+<h1 id="修复-step-4：-OC-defineClass"><a href="#修复-step-4：-OC-defineClass" class="headerlink" title="修复 step 4：_OC_defineClass"></a>修复 step 4：_OC_defineClass</h1><p><code>JPEngine</code>中的<code>defineClass</code>对类进行真正的重写操作，将类名、<code>selector</code>、方法实现（IMP）、方法签名等<code>runtime</code>重写方法所需的基本元素提取出来。<br><strong>源码解读：</strong></p>
+<pre><code class="Objective-C">/**
+ *  定义一个类／覆盖或新增一个方法.
+ *
+ *  @param classDeclaration 类的声明（需要替换或者新增的类名:继承的父类名 &lt;实现的协议1，实现的协议2&gt;）
+ *  @param instanceMethods  {实例方法}
+ *  @param classMethods     {类方法}
+ *
+ *  @return 返回@{@&quot;cls&quot;: className, @&quot;superCls&quot;: superClassName}
+ */
+static NSDictionary *defineClass(NSString *classDeclaration, JSValue *instanceMethods, JSValue *classMethods)
+{
+//    1.使用 NSScanner 分离 classDeclaration.
+    NSScanner *scanner = [NSScanner scannerWithString:classDeclaration];
+
+    NSString *className;        //类名
+    NSString *superClassName;   //父类名
+    NSString *protocolNames;    //实现的协议名
+    [scanner scanUpToString:@&quot;:&quot; intoString:&amp;className];
+    if (!scanner.isAtEnd) {
+        scanner.scanLocation = scanner.scanLocation + 1;
+        [scanner scanUpToString:@&quot;&lt;&quot; intoString:&amp;superClassName];
+        if (!scanner.isAtEnd) {
+            scanner.scanLocation = scanner.scanLocation + 1;
+            [scanner scanUpToString:@&quot;&gt;&quot; intoString:&amp;protocolNames];
+        }
+    }
+
+    if (!superClassName) superClassName = @&quot;NSObject&quot;;
+    className = trim(className);
+    superClassName = trim(superClassName);
+
+    NSArray *protocols = [protocolNames length] ? [protocolNames componentsSeparatedByString:@&quot;,&quot;] : nil;
+
+//    2.获取该Class对象.
+    Class cls = NSClassFromString(className);
+    if (!cls) {
+        Class superCls = NSClassFromString(superClassName);
+        if (!superCls) {
+            _exceptionBlock([NSString stringWithFormat:@&quot;can&#39;t find the super class %@&quot;, superClassName]);
+            return @{@&quot;cls&quot;: className};
+        }
+//        2.1 该Class对象为nil，为JS端添加一个新的类.
+        cls = objc_allocateClassPair(superCls, className.UTF8String, 0);
+        objc_registerClassPair(cls);
+    }
+
+    if (protocols.count &gt; 0) {
+        for (NSString* protocolName in protocols) {
+            Protocol *protocol = objc_getProtocol([trim(protocolName) cStringUsingEncoding:NSUTF8StringEncoding]);
+            class_addProtocol (cls, protocol);
+        }
+    }
+
+    for (int i = 0; i &lt; 2; i ++) {
+        BOOL isInstance = i == 0;
+        JSValue *jsMethods = isInstance ? instanceMethods: classMethods;
+//        3.若是添加实例方法，直接使用Class对象；
+//          若是添加类方法，需要获取元类.
+        Class currCls = isInstance ? cls: objc_getMetaClass(className.UTF8String);
+//      把js对象转换成OC的字典，从而可以取到方法名、参数个数、具体实现.
+        NSDictionary *methodDict = [jsMethods toDictionary];
+        for (NSString *jsMethodName in methodDict.allKeys) {
+//            遍历字典的key，即方法名，根据方法名取出的值还是JSValue对象，它代表的是数组，第一个值是参数的个数，第二个值是函数的实现.
+            JSValue *jsMethodArr = [jsMethods valueForProperty:jsMethodName];
+            int numberOfArg = [jsMethodArr[0] toInt32];
+            NSString *selectorName = convertJPSelectorString(jsMethodName);
+
+            if ([selectorName componentsSeparatedByString:@&quot;:&quot;].count - 1 &lt; numberOfArg) {
+                selectorName = [selectorName stringByAppendingString:@&quot;:&quot;];
+            }
+            JSValue *jsMethod = jsMethodArr[1];
+            if (class_respondsToSelector(currCls, NSSelectorFromString(selectorName))) {
+//                4.如果要替换的类已经定义了该方法，直接对该方法替换和实现消息转发.
+                overrideMethod(currCls, selectorName, jsMethod, !isInstance, NULL);
+            } else {
+                BOOL overrided = NO;
+                for (NSString *protocolName in protocols) {
+//                    5.1 遍历protocolsNames，依次获取协议对象和协议方法中的type和name
+                    char *types = methodTypesInProtocol(protocolName, selectorName, isInstance, YES);
+                    if (!types) types = methodTypesInProtocol(protocolName, selectorName, isInstance, NO);
+                    if (types) {
+//                        对协议方法实现消息转发.
+                        overrideMethod(currCls, selectorName, jsMethod, !isInstance, types);
+                        free(types);
+                        overrided = YES;
+                        break;
+                    }
+                }
+                if (!overrided) {
+//                    5.2 上述两种情况都不满足.js端请求添加一个新的方法.
+                    if (![[jsMethodName substringToIndex:1] isEqualToString:@&quot;_&quot;]) {
+//                      方法名的处理：_改为:
+                        NSMutableString *typeDescStr = [@&quot;@@:&quot; mutableCopy];
+                        for (int i = 0; i &lt; numberOfArg; i ++) {
+                            [typeDescStr appendString:@&quot;@&quot;];
+                        }
+//                        构造一个typeDescription为&quot;@@:\@*&quot;的IMP.将这个IMP添加到类中.
+                        overrideMethod(currCls, selectorName, jsMethod, !isInstance, [typeDescStr cStringUsingEncoding:NSUTF8StringEncoding]);
+                    }
+                }
+            }
+        }
+    }
+
+//    6.为该类添加两个方法，使js脚本拥有设置property的方法.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored &quot;-Wundeclared-selector&quot;
+    class_addMethod(cls, @selector(getProp:), (IMP)getPropIMP, &quot;@@:@&quot;);
+    class_addMethod(cls, @selector(setProp:forKey:), (IMP)setPropIMP, &quot;v@:@@&quot;);
+#pragma clang diagnostic pop
+
+//    7.返回字典给js脚本
+    return @{@&quot;cls&quot;: className, @&quot;superCls&quot;: superClassName};
+}
+</code></pre>
+<p>由源码可见，方法名、实现等处理好之后最终执行<code>overrideMethod</code>方法。</p>
+<p>#修复 step 5：overrideMethod<br><code>overrideMethod</code>是实现<strong>“替换”</strong>的最后一步。通过调用一系列runtime 方法增加／替换实现的api，使用<code>jsvalue</code>中将要替换的方法实现来替换oc类中的方法实现。<br>该函数做的事情比较多，一张图概括如下：<br><img src="https://ww1.sinaimg.cn/large/005YhI8igy1fwrgyvh58sj313o0u0785" alt=""><br><strong><em>4.向class添加名为ORIG＋selector，对应原始selector的IMP。</em></strong><br>这一步是为了让js通过这个方法调用原来的实现。</p>
+<p><strong><em>5.向class添加名为<code>ORIGforwardInvocation</code>的方法，实现是原始的<code>forwardInvocation</code>的IMP。</em></strong><br>这一步是为了保存<code>forwardInvocation</code>的旧有实现，在新的实现中做判断，如果转发的方法是欲改写的，就走新逻辑，反之走原来的流程。<br><strong>源码解读：</strong></p>
+<pre><code class="Objective-C">/**
+ *  使用jsvalue中将要替换的方法实现来替换oc类中的方法实现
+ *
+ *  @param cls             被替换的类
+ *  @param selectorName    被替换实现的SEL
+ *  @param function        在js中定义的将要替换的新的实现
+ *  @param isClassMethod   是否类方法（如果是--&gt;寻找MetaClass）
+ *  @param typeDescription 被替换的实现方法的编码
+ */
+
+static void overrideMethod(Class cls, NSString *selectorName, JSValue *function, BOOL isClassMethod, const char *typeDescription)
+{
+//    1. 要重写的方法的SEL.
+    SEL selector = NSSelectorFromString(selectorName);
+
+//    2. 获取重写方法的具体实现函数的格式编码.
+    if (!typeDescription) {
+        Method method = class_getInstanceMethod(cls, selector);
+        typeDescription = (char *)method_getTypeEncoding(method);
+    }
+
+//    3.获取 class 中被重写 SEL 对应的原始IMP.
+    IMP originalImp = class_respondsToSelector(cls, selector) ? class_getMethodImplementation(cls, selector) : NULL;
+
+//    4.准备进入消息转发处理的系统函数实现IMP.
+    IMP msgForwardIMP = _objc_msgForward;
+
+//    5.针对“非 arm64”架构，消息转发应使用 _objc_msgForward_stret 系统函数.
+//      因为_objc_msgForward函数在cpu架构不是 arm64 时，处理返回值是一些特殊 struct 时可能造成 crash.
+    #if !defined(__arm64__)
+        if (typeDescription[0] == &#39;{&#39;) {
+            //In some cases that returns struct, we should use the &#39;_stret&#39; API:
+            //http://sealiesoftware.com/blog/archive/2008/10/30/objc_explain_objc_msgSend_stret.html
+            //NSMethodSignature knows the detail but has no API to return, we can only get the info from debugDescription.
+            NSMethodSignature *methodSignature = [NSMethodSignature signatureWithObjCTypes:typeDescription];
+            if ([methodSignature.debugDescription rangeOfString:@&quot;is special struct return? YES&quot;].location != NSNotFound) {
+                msgForwardIMP = (IMP)_objc_msgForward_stret;
+            }
+        }
+    #endif
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored &quot;-Wundeclared-selector&quot;
+
+    if (class_getMethodImplementation(cls, @selector(forwardInvocation:)) != (IMP)JPForwardInvocation) {
+
+//     6.将cls中原来 forwardInvocaiton: 的实现替换成 JPForwardInvocation:函数实现.
+//       class_replaceMethod()返回的是替换之前的 IMP.
+        IMP originalForwardImp = class_replaceMethod(cls, @selector(forwardInvocation:), (IMP)JPForwardInvocation, &quot;v@:@&quot;);
+        if (originalForwardImp) {
+//     7.为cls添加新的SEL(ORIGforwardInvocation:)，指向原始 forwardInvocation: 的实现IMP.
+            class_addMethod(cls, @selector(ORIGforwardInvocation:), originalForwardImp, &quot;v@:@&quot;);
+        }
+    }
+#pragma clang diagnostic pop
+    [cls jp_fixMethodSignature];
+    if (class_respondsToSelector(cls, selector)) {
+        NSString *originalSelectorName = [NSString stringWithFormat:@&quot;ORIG%@&quot;, selectorName];
+        SEL originalSelector = NSSelectorFromString(originalSelectorName);
+        if(!class_respondsToSelector(cls, originalSelector)) {
+//      8.为cls添加新的SEL(ORIG...:)指向被替换方法的原始实现IMP.
+            class_addMethod(cls, originalSelector, originalImp, typeDescription);
+        }
+    }
+
+//      9.构造替换实现后的新SEL:(JP...)
+    NSString *JPSelectorName = [NSString stringWithFormat:@&quot;_JP%@&quot;, selectorName];
+
+//     10.记录新SEL对应js传过来的待替换目标方法的实现.
+    _initJPOverideMethods(cls);
+    _JSOverideMethods[cls][JPSelectorName] = function;
+
+//    11.替换原SEL的实现IMP为msgForwardIMP
+//       让被替换的方法调用时，直接进入“消息转发”流程（_objc_msgForward 或 _objc_msgForward_stret）
+//       这一步放到最后是为了避免在 overrideMethod 过程中调用原sel导致的线程问题.
+    class_replaceMethod(cls, selector, msgForwardIMP, typeDescription);
+}
+</code></pre>
+<p>至此，<code>selector</code>具体实现 IMP 的替换工作已经完成了。接下来便可以分析一下点击button后的<code>handle</code>事件。</p>
+<p>#调用 step 1：JPForwardInvocation<br>经过上一步处理，<code>handle:</code>直接走<code>objc_msgForward</code>进行消息转发环节。当点击button，调用<code>handle:</code>的时候，函数调用的参数会被封装到<code>NSInvocation</code>对象，走到<code>forwardInvocation</code>方法。上一步中<code>forwardInvocation</code>方法的实现替换成了<code>JPForwardInvocation</code>，<strong>负责拦截系统消息转发函数传入的<code>NSInvocation</code>并从中获取到所有的方法执行参数值，是实现替换和新增方法的核心</strong>。<br><strong>源码解读：</strong></p>
+<pre><code class="Objective-C">/**
+ *  替换原有的forwarInvocation:方法
+ *
+ *  @param assignSlf  self
+ *  @param selector   原始SEL
+ *  @param invocation 封装了函数调用参数的NSInvocation对象
+ */
+static void JPForwardInvocation(__unsafe_unretained id assignSlf, SEL selector, NSInvocation *invocation)
+{
+//    1.表示oc对象是否已经被释放
+    BOOL deallocFlag = NO;
+    id slf = assignSlf;
+
+//    2.获取invocation中参数的数量
+    NSMethodSignature *methodSignature = [invocation methodSignature];
+    NSInteger numberOfArguments = [methodSignature numberOfArguments];
+
+//    3.转化调用的SEL为JPSEL（这是JSPatch中缓存JSValue* function的key格式）
+    NSString *selectorName = NSStringFromSelector(invocation.selector);
+    NSString *JPSelectorName = [NSString stringWithFormat:@&quot;_JP%@&quot;, selectorName];
+
+//    4.判断JPSEL是否有对应的js函数的实现，如果没有就走原始方法的消息转发的流程.
+    JSValue *jsFunc = getJSFunctionInObjectHierachy(slf, JPSelectorName);
+    if (!jsFunc) {
+        JPExecuteORIGForwardInvocation(slf, selector, invocation);
+        return;
+    }
+
+//    5.从NSInvocation中获取调用的参数，把self与相应的参数都转换成js对象并封装到一个集合中
+//      js端重写的函数，传递过来是JSValue类型，用callWithArgument:调用js方法，参数也要是js对象.
+
+//    5.1 初始化数组，存储NSInvacation中获取的参数列表，传给对应的js函数
+    NSMutableArray *argList = [[NSMutableArray alloc] init];
+    if ([slf class] == slf) {
+//        5.2 类方法：设置__clsName标识表明这是一个类对象
+        [argList addObject:[JSValue valueWithObject:@{@&quot;__clsName&quot;: NSStringFromClass([slf class])} inContext:_context]];
+    } else if ([selectorName isEqualToString:@&quot;dealloc&quot;]) {
+//        5.3 要被释放的对象：使用assign来保存self指针
+        [argList addObject:[JPBoxing boxAssignObj:slf]];
+        deallocFlag = YES;
+    } else {
+//        5.4 使用 weak 保存self 指针
+        [argList addObject:[JPBoxing boxWeakObj:slf]];
+    }
+
+//    5.5 NSInvocation 对象的前两个参数是self和_cmd（http://stackoverflow.com/questions/5788346/calling-a-selector-with-unknown-number-of-arguments-using-reflection-introspec）
+//    所以直接从第3个参数开始获取
+    for (NSUInteger i = 2; i &lt; numberOfArguments; i++) {
+        const char *argumentType = [methodSignature getArgumentTypeAtIndex:i];
+//        返回值如果是const，获取encoding来判断类型.
+        switch(argumentType[0] == &#39;r&#39; ? argumentType[1] : argumentType[0]) {
+
+//                从invocation中获取参数，添加到argList中.
+            #define JP_FWD_ARG_CASE(_typeChar, _type) \
+            case _typeChar: {   \
+                _type arg;  \
+                [invocation getArgument:&amp;arg atIndex:i];    \
+                [argList addObject:@(arg)]; \
+                break;  \
+            }
+            JP_FWD_ARG_CASE(&#39;c&#39;, char)
+            JP_FWD_ARG_CASE(&#39;C&#39;, unsigned char)
+            JP_FWD_ARG_CASE(&#39;s&#39;, short)
+            JP_FWD_ARG_CASE(&#39;S&#39;, unsigned short)
+            JP_FWD_ARG_CASE(&#39;i&#39;, int)
+            JP_FWD_ARG_CASE(&#39;I&#39;, unsigned int)
+            JP_FWD_ARG_CASE(&#39;l&#39;, long)
+            JP_FWD_ARG_CASE(&#39;L&#39;, unsigned long)
+            JP_FWD_ARG_CASE(&#39;q&#39;, long long)
+            JP_FWD_ARG_CASE(&#39;Q&#39;, unsigned long long)
+            JP_FWD_ARG_CASE(&#39;f&#39;, float)
+            JP_FWD_ARG_CASE(&#39;d&#39;, double)
+            JP_FWD_ARG_CASE(&#39;B&#39;, BOOL)
+            case &#39;@&#39;: {
+//                id类型参数使用__unsafe__unretained
+                __unsafe_unretained id arg;
+                [invocation getArgument:&amp;arg atIndex:i];
+//                block参数使用copy，_nilObj表示nil
+                if ([arg isKindOfClass:NSClassFromString(@&quot;NSBlock&quot;)]) {
+                    [argList addObject:(arg ? [arg copy]: _nilObj)];
+                } else {
+                    [argList addObject:(arg ? arg: _nilObj)];
+                }
+                break;
+            }
+            case &#39;{&#39;: {
+//                处理结构体类型参数
+//                获取结构体类型名称，把参数包装成JSValue类型
+                NSString *typeString = extractStructName([NSString stringWithUTF8String:argumentType]);
+                #define JP_FWD_ARG_STRUCT(_type, _transFunc) \
+                if ([typeString rangeOfString:@#_type].location != NSNotFound) {    \
+                    _type arg; \
+                    [invocation getArgument:&amp;arg atIndex:i];    \
+                    [argList addObject:[JSValue _transFunc:arg inContext:_context]];  \
+                    break; \
+                }
+                JP_FWD_ARG_STRUCT(CGRect, valueWithRect)
+                JP_FWD_ARG_STRUCT(CGPoint, valueWithPoint)
+                JP_FWD_ARG_STRUCT(CGSize, valueWithSize)
+                JP_FWD_ARG_STRUCT(NSRange, valueWithRange)
+
+//                自定义类型的结构体处理
+                @synchronized (_context) {
+                    NSDictionary *structDefine = _registeredStruct[typeString];
+                    if (structDefine) {
+                        size_t size = sizeOfStructTypes(structDefine[@&quot;types&quot;]);
+                        if (size) {
+                            void *ret = malloc(size);
+                            [invocation getArgument:ret atIndex:i];
+                            NSDictionary *dict = getDictOfStruct(ret, structDefine);
+                            [argList addObject:[JSValue valueWithObject:dict inContext:_context]];
+                            free(ret);
+                            break;
+                        }
+                    }
+                }
+
+                break;
+            }
+            case &#39;:&#39;: {
+//                selector类型处理
+                SEL selector;
+                [invocation getArgument:&amp;selector atIndex:i];
+                NSString *selectorName = NSStringFromSelector(selector);
+                [argList addObject:(selectorName ? selectorName: _nilObj)];
+                break;
+            }
+            case &#39;^&#39;:
+            case &#39;*&#39;: {
+//                指针类型处理
+                void *arg;
+                [invocation getArgument:&amp;arg atIndex:i];
+                [argList addObject:[JPBoxing boxPointer:arg]];
+                break;
+            }
+            case &#39;#&#39;: {
+//                Class类型
+                Class arg;
+                [invocation getArgument:&amp;arg atIndex:i];
+                [argList addObject:[JPBoxing boxClass:arg]];
+                break;
+            }
+            default: {
+                NSLog(@&quot;error type %s&quot;, argumentType);
+                break;
+            }
+        }
+    }
+
+    if (_currInvokeSuperClsName) {
+        Class cls = NSClassFromString(_currInvokeSuperClsName);
+        NSString *tmpSelectorName = [[selectorName stringByReplacingOccurrencesOfString:@&quot;_JPSUPER_&quot; withString:@&quot;_JP&quot;] stringByReplacingOccurrencesOfString:@&quot;SUPER_&quot; withString:@&quot;_JP&quot;];
+        if (!_JSOverideMethods[cls][tmpSelectorName]) {
+            NSString *ORIGSelectorName = [selectorName stringByReplacingOccurrencesOfString:@&quot;SUPER_&quot; withString:@&quot;ORIG&quot;];
+            [argList removeObjectAtIndex:0];
+            id retObj = callSelector(_currInvokeSuperClsName, ORIGSelectorName, [JSValue valueWithObject:argList inContext:_context], [JSValue valueWithObject:@{@&quot;__obj&quot;: slf, @&quot;__realClsName&quot;: @&quot;&quot;} inContext:_context], NO);
+            id __autoreleasing ret = formatJSToOC([JSValue valueWithObject:retObj inContext:_context]);
+            [invocation setReturnValue:&amp;ret];
+            return;
+        }
+    }
+
+//    6.将上面获得的参数列表数组转化为对应的js对象数组
+    NSArray *params = _formatOCToJSList(argList);
+    char returnType[255];
+//    7.获取返回值类型
+    strcpy(returnType, [methodSignature methodReturnType]);
+
+    // Restore the return type
+    if (strcmp(returnType, @encode(JPDouble)) == 0) {
+        strcpy(returnType, @encode(double));
+    }
+    if (strcmp(returnType, @encode(JPFloat)) == 0) {
+        strcpy(returnType, @encode(float));
+    }
+
+//    7.1 返回值是否为const，如果是，获取后面的encoding来判断类型
+    switch (returnType[0] == &#39;r&#39; ? returnType[1] : returnType[0]) {
+    ...(返回值的其它封装规则，具体看源码)
+    }
+    if (_pointersToRelease) {
+        for (NSValue *val in _pointersToRelease) {
+            void *pointer = NULL;
+            [val getValue:&amp;pointer];
+            CFRelease(pointer);
+        }
+        _pointersToRelease = nil;
+    }
+
+//    8.待替换的方法是 delloc 需要特殊处理：
+    if (deallocFlag) {
+        slf = nil;
+        Class instClass = object_getClass(assignSlf);
+        Method deallocMethod = class_getInstanceMethod(instClass, NSSelectorFromString(@&quot;ORIGdealloc&quot;));
+        //获取原delloc imp 指针，调用delloc，防止内存泄漏.
+        void (*originalDealloc)(__unsafe_unretained id, SEL) = (__typeof__(originalDealloc))method_getImplementation(deallocMethod);
+        originalDealloc(assignSlf, NSSelectorFromString(@&quot;dealloc&quot;));
+    }
+}
+</code></pre>
+<p>接下来执行JS中定义的方法实现。“修复 step 2”中已经讨论过，现在main.js中所有的函数都被替换成名为<code>__c(&#39;methodName&#39;)</code>的函数调用，<code>__c</code>调用了<code>_methodFunc</code>函数，<code>_methodFunc</code>会根据方法类型调用<code>_OC_call</code>：</p>
+<pre><code class="JavaScript">var ret = instance ? _OC_callI(instance, selectorName, args, isSuper):
+                         _OC_callC(clsName, selectorName, args)
+</code></pre>
+<p><code>_OC_callI</code>或<code>_OC_callC</code>最终都会调用一个<code>static</code>函数<code>callSelector</code>。</p>
+<h1 id="调用-step-2：callSelector"><a href="#调用-step-2：callSelector" class="headerlink" title="调用 step 2：callSelector"></a>调用 step 2：callSelector</h1><p><code>main.js</code>中类似<code>UIAlertView.alloc().init()</code>实际是通过<code>callSelector</code>调用 OC 的方法。</p>
+<ul>
+<li>将 js 对象和参数转化为 OC 对象；</li>
+<li>判断是否调用的是父类的方法，如果是，就走父类的方法实现；</li>
+<li>把参数等信息封装成NSInvocation对象，并执行，然后返回结果。</li>
+</ul>
+<p><strong>源码解读：</strong></p>
+<pre><code class="Objective-C">/**
+ *  完成oc中的方法调用
+ *
+ *  @param className    类名（nil --&gt; 表示实例方法）
+ *  @param selectorName 方法SEL值
+ *  @param arguments    方法执行参数
+ *  @param instance     对象（js对象中的变量，如: var UIAlertView = { __clsName : &#39;UIAlertView&#39;}）
+ *  @param isSuper      是否调用的是父类方法
+ *
+ *  @return 方法执行后的结果值，返回给js代码中.
+ */
+static id callSelector(NSString *className, NSString *selectorName, JSValue *arguments, JSValue *instance, BOOL isSuper)
+{
+    NSString *realClsName = [[instance valueForProperty:@&quot;__realClsName&quot;] toString];
+
+    if (instance) {
+//    1.将js封装的instance对象进行拆装，得到oc对象.
+        instance = formatJSToOC(instance);
+        if (!instance || instance == _nilObj || [instance isKindOfClass:[JPBoxing class]]) return @{@&quot;__isNil&quot;: @(YES)};
+    }
+//    2.将js封装的参数列表转为oc类型.
+    id argumentsObj = formatJSToOC(arguments);
+
+    if (instance &amp;&amp; [selectorName isEqualToString:@&quot;toJS&quot;]) {
+//      3.如果要执行的方法是&quot;toJS&quot;，即转化为js类型，对于NSString/NSDictory/NSArray/NSData需进行特殊处理
+//        因为JSPatch中需使用JPBoxing包装OC中的上述对象，防止JavaScriptCore.framework转换类型.
+        if ([instance isKindOfClass:[NSString class]] || [instance isKindOfClass:[NSDictionary class]] || [instance isKindOfClass:[NSArray class]] || [instance isKindOfClass:[NSDate class]]) {
+            return _unboxOCObjectToJS(instance);
+        }
+    }
+
+//    4.根据类名与selectorName获得对应的类对象与selector
+    Class cls = instance ? [instance class] : NSClassFromString(className);
+    SEL selector = NSSelectorFromString(selectorName);
+
+    NSString *superClassName = nil;
+//    5.判断是否调用的是父类的方法，如果是，走父类的方法实现
+    if (isSuper) {
+//        5.1 定义新的SEL:SUPERSEL
+        NSString *superSelectorName = [NSString stringWithFormat:@&quot;SUPER_%@&quot;, selectorName];
+        SEL superSelector = NSSelectorFromString(superSelectorName);
+
+        Class superCls;
+        if (realClsName.length) {
+            Class defineClass = NSClassFromString(realClsName);
+            superCls = defineClass ? [defineClass superclass] : [cls superclass];
+        } else {
+            superCls = [cls superclass];
+        }
+
+        Method superMethod = class_getInstanceMethod(superCls, selector);
+        IMP superIMP = method_getImplementation(superMethod);
+
+//        5.2  将SUPERSEL指向superIMP的实现
+        class_addMethod(cls, superSelector, superIMP, method_getTypeEncoding(superMethod));
+
+//        5.3  查找父类中是否有添加JPSEL的实现
+        NSString *JPSelectorName = [NSString stringWithFormat:@&quot;_JP%@&quot;, selectorName];
+        JSValue *overideFunction = _JSOverideMethods[superCls][JPSelectorName];
+        if (overideFunction) {
+//            如果有，进行imp替换
+            overrideMethod(cls, superSelectorName, overideFunction, NO, NULL);
+        }
+
+        selector = superSelector;
+        superClassName = NSStringFromClass(superCls);
+    }
+
+
+    NSMutableArray *_markArray;
+
+//    6.通过类对象与selector构造对应的NSMethodSignature签名
+    NSInvocation *invocation;
+    NSMethodSignature *methodSignature;
+    if (!_JSMethodSignatureCache) {
+        _JSMethodSignatureCache = [[NSMutableDictionary alloc]init];
+    }
+    if (instance) {
+        [_JSMethodSignatureLock lock];
+        if (!_JSMethodSignatureCache[cls]) {
+            _JSMethodSignatureCache[(id&lt;NSCopying&gt;)cls] = [[NSMutableDictionary alloc]init];
+        }
+        methodSignature = _JSMethodSignatureCache[cls][selectorName];
+        if (!methodSignature) {
+            methodSignature = [cls instanceMethodSignatureForSelector:selector];
+            methodSignature = fixSignature(methodSignature);
+            _JSMethodSignatureCache[cls][selectorName] = methodSignature;
+        }
+        [_JSMethodSignatureLock unlock];
+        if (!methodSignature) {
+            _exceptionBlock([NSString stringWithFormat:@&quot;unrecognized selector %@ for instance %@&quot;, selectorName, instance]);
+            return nil;
+        }
+//        7.根据签名构造NSInvocation对象
+        invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
+//        8.为invocation对象设置target
+        [invocation setTarget:instance];
+    } else {
+        methodSignature = [cls methodSignatureForSelector:selector];
+        methodSignature = fixSignature(methodSignature);
+        if (!methodSignature) {
+            _exceptionBlock([NSString stringWithFormat:@&quot;unrecognized selector %@ for class %@&quot;, selectorName, className]);
+            return nil;
+        }
+        invocation= [NSInvocation invocationWithMethodSignature:methodSignature];
+        [invocation setTarget:cls];
+    }
+//        9.为invocation对象设置selector
+    [invocation setSelector:selector];
+
+//    10.根据签名得知每个参数的实际类型
+    NSUInteger numberOfArguments = methodSignature.numberOfArguments;
+    NSInteger inputArguments = [(NSArray *)argumentsObj count];
+    if (inputArguments &gt; numberOfArguments - 2) {
+//        10.1 多参数方法仅支持 id 类型参数和 id 类型返回,直接revoke并返回.
+        id sender = instance != nil ? instance : cls;
+        id result = invokeVariableParameterMethod(argumentsObj, methodSignature, sender, selector);
+        return formatOCToJS(result);
+    }
+
+//    10.2 将JS传递过来的参数进行对应的转换(如 NSNumber -&gt; int)，转换后为 NSInvocation 对象设置参数.
+    for (NSUInteger i = 2; i &lt; numberOfArguments; i++) {
+        const char *argumentType = [methodSignature getArgumentTypeAtIndex:i];
+        id valObj = argumentsObj[i-2];
+        switch (argumentType[0] == &#39;r&#39; ? argumentType[1] : argumentType[0]) {
+            //...(具体转换规则看源代码)
+        }
+    }
+
+    if (superClassName) _currInvokeSuperClsName = superClassName;
+
+//    11.执行 invoke 方法,并且传递指定的参数
+    [invocation invoke];
+
+    if (superClassName) _currInvokeSuperClsName = nil;
+    if ([_markArray count] &gt; 0) {
+        for (JPBoxing *box in _markArray) {
+            void *pointer = [box unboxPointer];
+            id obj = *((__unsafe_unretained id *)pointer);
+            if (obj) {
+                @synchronized(_TMPMemoryPool) {
+                    [_TMPMemoryPool setObject:obj forKey:[NSNumber numberWithInteger:[(NSObject*)obj hash]]];
+                }
+            }
+        }
+    }
+
+    char returnType[255];
+    strcpy(returnType, [methodSignature methodReturnType]);
+
+    // Restore the return type
+    if (strcmp(returnType, @encode(JPDouble)) == 0) {
+        strcpy(returnType, @encode(double));
+    }
+    if (strcmp(returnType, @encode(JPFloat)) == 0) {
+        strcpy(returnType, @encode(float));
+    }
+
+    id returnValue;
+    if (strncmp(returnType, &quot;v&quot;, 1) != 0) {
+        if (strncmp(returnType, &quot;@&quot;, 1) == 0) {
+            void *result;
+//            12. 获取 invocation 运行返回值.
+            [invocation getReturnValue:&amp;result];
+
+//            13. 将返回值封装成JS对应的对象并返回.
+            //For performance, ignore the other methods prefix with alloc/new/copy/mutableCopy
+            if ([selectorName isEqualToString:@&quot;alloc&quot;] || [selectorName isEqualToString:@&quot;new&quot;] ||
+                [selectorName isEqualToString:@&quot;copy&quot;] || [selectorName isEqualToString:@&quot;mutableCopy&quot;]) {
+                returnValue = (__bridge_transfer id)result;
+            } else {
+                returnValue = (__bridge id)result;
+            }
+            return formatOCToJS(returnValue);
+
+        } else {
+            switch (returnType[0] == &#39;r&#39; ? returnType[1] : returnType[0]) {
+            //...（具体转换规则见源代码）
+            return returnValue;
+        }
+    }
+    return nil;
+}
+</code></pre>
+<p>至此，JSPatch 热修复核心步骤<strong>方法替换</strong>和<strong>方法调用</strong>就结束了。</p>
+<p>#总结<br>JSPatch 基于<code>JavaScriptCore.framework</code>和Objective-C中的runtime技术。</p>
+<ul>
+<li>采用 iOS7 后引入的 <code>JavaScriptCore.framework</code>作为 JavaScript 引擎解析js脚本，执行js代码并与OC端代码进行桥接。</li>
+<li>使用Objective-C <code>runtime</code>中的<code>method swizzling</code>方式达到使用js脚本动态替换原有OC方法的目的，并利用<code>forwardInvocation</code>消息转发机制使得在js脚本中调用OC的方法成为可能。</li>
+</ul>
+<p>JSPatch 实现过程中还有许多细节问题诸如 Special Struct、内存管理、<code>JPBoxing</code>、<code>nil</code>处理等，更多详细内容可以阅读作者的原理详解系列文章以及<a href="https://github.com/bang590/JSPatch/wiki" target="_blank" rel="noopener">GitHub wiki</a>。学习 JSPatch 不仅可以弄清 iOS 热修复机制，也可以体会到如何利用 runtime 这一 OC 最重要的特性来实现一些强大的功能。这里不得不佩服作者深厚的编程功底和各种精彩的奇思妙想。<br><img src="https://ww1.sinaimg.cn/large/005YhI8igy1fwrgz3wjngj30h30ckmzt" alt=""></p>
+</div><script type="text/javascript" src="/js/share.js?v=0.0.0" async></script><a class="article-share-link" data-url="https://zltunes.github.io/2018/06/14/jspatch-sourcecode/" data-id="cjsrbh9em00243ork9cmeutms" data-qrcode="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACLUlEQVR42u3aQY6DMAwF0N7/0ow0ml3b8O0wlWpeVhWFJI+FSew8HnE7ftv6yvO/1XuSp7YaBgbG1zKOZXue9Hrg5Nl30133tn4WAwPjDox1kF0PvJ7iuv+kz+QDgIGBgdHsOgjr+bgYGBgY1YDbW+RVe8PAwMCobmLzxWIyoeq4l+3FMTAwvpBRLQx88vc/1jcwMDC+hHEUW7UYkATcnfn89YCBgTGaUT1IkaT4d7ajvdeBgYExm1ENi/nGtbfhTIqaL65gYGDcgNFL3O+Ae+H+bc8YGBijGcnRrmp5cv+l9A6KYWBgTGXsVxXyCfWScREJAwNjNGOnGpgP/8mFJgYGxjxGniBLwvHOWY88NL+4joGBcQNG7wDE/gJxn4qBgXEHxkmqvZXQr24783ExMDDuzNgJr9Xr1SVmPgoGBsZsRnUZl9/fS9s1E3AYGBg3YFQD5X7ZoPeaTgIuBgbGaEYSZPOyQe/gRV6oeDEuBgbGaMZVw1eLmtWDGoUCAwYGxiDGzsayGiJzdjWdh4GBcQdGtTCwvyisfgdOnsLAwBjN6IXCPN3WW3QmBc7o64GBgTGCcRRbnpJLAmX+70n+HwMDYzQjb9WjD/myMp9oOXeIgYExiFENstXNbW9jnNwZ5Q4xMDAGMapT6ZU8Hxvt5JAHBgYGRnGTmYMvC/cYGBgYFxUye8cpok0yBgbGDRh5sv6qJWCvh0IlFgMDYxDjqlzW/qSvTflhYGCMYPwAO4pgvpiXmwAAAAAASUVORK5CYII=">分享</a><div class="tags"><a href="/tags/iOS/">iOS</a><a href="/tags/JSPatch/">JSPatch</a><a href="/tags/sourcecode/">源码</a><a href="/tags/dynamic/">动态化</a></div><div class="post-nav"><a class="pre" href="/2018/06/14/jspatch-swift/">iOS 热更新解读（三）—— JSPatch 之于 Swift</a><a class="next" href="/2018/06/14/jspatch-apatch&amp;javascriptcore/">iOS 热更新解读（一）APatch &amp; JavaScriptCore</a></div><div id="lv-container" data-id="city" data-uid="MTAyMC8zNjkyMi8xMzQ1OA=="><script>(function(d, s) {
+   var j, e = d.getElementsByTagName(s)[0];
+   if (typeof LivereTower === 'function') { return; }
+   j = d.createElement(s);
+   j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+   j.async = true;
+   e.parentNode.insertBefore(j, e);
+})(document, 'script');
+</script></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="https://zltunes.github.io"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/web/">web</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/sourcecode/" style="font-size: 15px;">源码</a> <a href="/tags/iOS/" style="font-size: 15px;">iOS</a> <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/swichphone/" style="font-size: 15px;">换机</a> <a href="/tags/notification/" style="font-size: 15px;">通知</a> <a href="/tags/Messages/" style="font-size: 15px;">Messages</a> <a href="/tags/JSPatch/" style="font-size: 15px;">JSPatch</a> <a href="/tags/iPhone/" style="font-size: 15px;">iPhone</a> <a href="/tags/dynamic/" style="font-size: 15px;">动态化</a> <a href="/tags/rails/" style="font-size: 15px;">rails</a> <a href="/tags/web/" style="font-size: 15px;">web</a> <a href="/tags/ReactiveCocoa/" style="font-size: 15px;">ReactiveCocoa</a> <a href="/tags/ROS/" style="font-size: 15px;">ROS</a> <a href="/tags/robot/" style="font-size: 15px;">机器人</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://dreampiggy.com/" title="小猪的博客" target="_blank">小猪的博客</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">zltunes.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.css"><script type="text/x-mathjax-config">MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+  });
+</script><script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
