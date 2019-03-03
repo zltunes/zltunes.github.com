@@ -27,7 +27,7 @@ body {
 
 .body_container {
   padding: 0 60px;
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto; }
 
 .content_container {
@@ -218,7 +218,7 @@ div {
     clear: left;
     font-size: 15px;
     line-height: 1.77;
-    color: #444;
+    color: #2a2a2a;
     padding-top: 15px;
     text-align: justify;
     text-justify: distribute;
