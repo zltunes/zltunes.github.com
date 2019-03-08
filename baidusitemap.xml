@@ -4,6 +4,85 @@
 
     
   <url>
+    <loc>https://zltunes.github.io/2018/06/14/jspatch-sourcecode/</loc>
+    <lastmod>2019-03-08T09:05:01.385Z</lastmod>
+    <data>
+        <display>
+        <title>iOS 热更新解读（二）—— JSPatch 源码解析</title>
+        <pubTime>2018-06-14T09:17:30.359Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+        <tag>动态化</tag>
+         
+        <tag>JSPatch</tag>
+         
+        <tag>源码</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2018/06/13/ios-android-transfer/</loc>
+    <lastmod>2019-03-08T08:56:40.877Z</lastmod>
+    <data>
+        <display>
+        <title>iPhone & Android 换机通信方案分析</title>
+        <pubTime>2018-06-13T13:24:30.570Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+        <tag>iPhone</tag>
+         
+        <tag>Android</tag>
+         
+        <tag>换机</tag>
+         
+         
+           
+             
+              <breadCrumb title="Android" url="https://zltunes.github.io/categories/Android/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2019/03/08/cross-platform-app/</loc>
+    <lastmod>2019-03-08T08:56:25.677Z</lastmod>
+    <data>
+        <display>
+        <title>客户端跨平台开发技术对比</title>
+        <pubTime>2019-03-08T08:53:22.177Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+        <tag>Android</tag>
+         
+        <tag>动态化</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+             
+              <breadCrumb title="Android" url="https://zltunes.github.io/categories/iOS/Android/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://zltunes.github.io/2019/03/06/blockchain/</loc>
     <lastmod>2019-03-06T02:47:33.670Z</lastmod>
     <data>
@@ -115,37 +194,11 @@
         
         <tag>iOS</tag>
          
-        <tag>JSPatch</tag>
-         
-        <tag>源码</tag>
-         
         <tag>动态化</tag>
-         
-         
-           
-             
-              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2018/06/14/jspatch-sourcecode/</loc>
-    <lastmod>2018-10-31T08:08:59.701Z</lastmod>
-    <data>
-        <display>
-        <title>iOS 热更新解读（二）—— JSPatch 源码解析</title>
-        <pubTime>2018-06-14T09:17:30.359Z</pubTime>
-        
-        <tag>iOS</tag>
          
         <tag>JSPatch</tag>
          
         <tag>源码</tag>
-         
-        <tag>动态化</tag>
          
          
            
@@ -234,11 +287,11 @@
         
         <tag>iOS</tag>
          
+        <tag>动态化</tag>
+         
         <tag>JSPatch</tag>
          
         <tag>源码</tag>
-         
-        <tag>动态化</tag>
          
          
            
@@ -308,32 +361,6 @@
            
              
               <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2018/06/13/ios-android-transfer/</loc>
-    <lastmod>2018-10-16T09:10:56.455Z</lastmod>
-    <data>
-        <display>
-        <title>iPhone & Android 换机通信方案分析</title>
-        <pubTime>2018-06-13T13:24:30.570Z</pubTime>
-        
-        <tag>iOS</tag>
-         
-        <tag>iPhone</tag>
-         
-        <tag>Android</tag>
-         
-        <tag>换机</tag>
-         
-         
-           
-             
-              <breadCrumb title="Android" url="https://zltunes.github.io/categories/Android/"/>
           
         </display>
     </data>
