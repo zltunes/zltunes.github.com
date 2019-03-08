@@ -4,28 +4,8 @@
 
     
   <url>
-    <loc>https://zltunes.github.io/2019/03/08/about-https/</loc>
-    <lastmod>2019-03-08T10:07:03.454Z</lastmod>
-    <data>
-        <display>
-        <title>HTTPS 协议和原理</title>
-        <pubTime>2019-03-08T10:07:03.454Z</pubTime>
-        
-        <tag>HTTPS</tag>
-         
-         
-           
-             
-              <breadCrumb title="web" url="https://zltunes.github.io/categories/web/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
     <loc>https://zltunes.github.io/2019/03/08/cross-platform-app/</loc>
-    <lastmod>2019-03-08T10:06:04.128Z</lastmod>
+    <lastmod>2019-03-08T12:06:11.896Z</lastmod>
     <data>
         <display>
         <title>客户端跨平台开发技术对比</title>
@@ -41,6 +21,26 @@
            
              
               <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2019/03/08/about-https/</loc>
+    <lastmod>2019-03-08T10:07:03.454Z</lastmod>
+    <data>
+        <display>
+        <title>HTTPS 协议和原理</title>
+        <pubTime>2019-03-08T10:07:03.454Z</pubTime>
+        
+        <tag>HTTPS</tag>
+         
+         
+           
+             
+              <breadCrumb title="web" url="https://zltunes.github.io/categories/web/"/>
           
         </display>
     </data>
