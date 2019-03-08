@@ -3,6 +3,27 @@
   
     
     <entry>
+      <title>HTTPS 协议和原理</title>
+      <link href="/2019/03/08/about-https/"/>
+      <url>/2019/03/08/about-https/</url>
+      <content type="html"><![CDATA[<p>本文是之前在部门内做的关于 HTTPS 的分享，内容包括 HTTPS 的出现背景与发展趋势、HTTPS 原理（内容加密防窃听、身份认证防冒充、数据完整防篡改）、HTTPS 对性能的影响、如何优化 HTTPS、如何实现全站 HTTPS 等。<br><a id="more"></a></p><center><embed src="/share/https.pdf" width="800" height="610"></center>]]></content>
+      
+      <categories>
+          
+          <category> web </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> HTTPS </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
       <title>客户端跨平台开发技术对比</title>
       <link href="/2019/03/08/cross-platform-app/"/>
       <url>/2019/03/08/cross-platform-app/</url>
@@ -11,8 +32,6 @@
       <categories>
           
           <category> iOS </category>
-          
-          <category> Android </category>
           
       </categories>
       

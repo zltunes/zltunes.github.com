@@ -4,6 +4,50 @@
 
     
   <url>
+    <loc>https://zltunes.github.io/2019/03/08/about-https/</loc>
+    <lastmod>2019-03-08T10:07:03.454Z</lastmod>
+    <data>
+        <display>
+        <title>HTTPS 协议和原理</title>
+        <pubTime>2019-03-08T10:07:03.454Z</pubTime>
+        
+        <tag>HTTPS</tag>
+         
+         
+           
+             
+              <breadCrumb title="web" url="https://zltunes.github.io/categories/web/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2019/03/08/cross-platform-app/</loc>
+    <lastmod>2019-03-08T10:06:04.128Z</lastmod>
+    <data>
+        <display>
+        <title>客户端跨平台开发技术对比</title>
+        <pubTime>2019-03-08T08:53:22.177Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+        <tag>Android</tag>
+         
+        <tag>动态化</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://zltunes.github.io/2018/06/14/jspatch-sourcecode/</loc>
     <lastmod>2019-03-08T09:05:01.385Z</lastmod>
     <data>
@@ -49,33 +93,6 @@
            
              
               <breadCrumb title="Android" url="https://zltunes.github.io/categories/Android/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2019/03/08/cross-platform-app/</loc>
-    <lastmod>2019-03-08T08:56:25.677Z</lastmod>
-    <data>
-        <display>
-        <title>客户端跨平台开发技术对比</title>
-        <pubTime>2019-03-08T08:53:22.177Z</pubTime>
-        
-        <tag>iOS</tag>
-         
-        <tag>Android</tag>
-         
-        <tag>动态化</tag>
-         
-         
-           
-             
-              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-             
-              <breadCrumb title="Android" url="https://zltunes.github.io/categories/iOS/Android/"/>
           
         </display>
     </data>
