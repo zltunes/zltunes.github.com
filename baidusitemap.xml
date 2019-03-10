@@ -4,6 +4,46 @@
 
     
   <url>
+    <loc>https://zltunes.github.io/2019/03/10/uitextview-max-length/</loc>
+    <lastmod>2019-03-10T06:48:04.810Z</lastmod>
+    <data>
+        <display>
+        <title>UITextView 输入字数限制</title>
+        <pubTime>2019-03-10T06:42:56.243Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2019/03/08/about-https/</loc>
+    <lastmod>2019-03-10T06:44:16.479Z</lastmod>
+    <data>
+        <display>
+        <title>HTTPS 协议和原理</title>
+        <pubTime>2019-03-08T10:07:03.454Z</pubTime>
+        
+        <tag>HTTPS</tag>
+         
+         
+           
+             
+              <breadCrumb title="web" url="https://zltunes.github.io/categories/web/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://zltunes.github.io/2019/03/08/cross-platform-app/</loc>
     <lastmod>2019-03-08T12:06:11.896Z</lastmod>
     <data>
@@ -21,26 +61,6 @@
            
              
               <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2019/03/08/about-https/</loc>
-    <lastmod>2019-03-08T10:07:03.454Z</lastmod>
-    <data>
-        <display>
-        <title>HTTPS 协议和原理</title>
-        <pubTime>2019-03-08T10:07:03.454Z</pubTime>
-        
-        <tag>HTTPS</tag>
-         
-         
-           
-             
-              <breadCrumb title="web" url="https://zltunes.github.io/categories/web/"/>
           
         </display>
     </data>
