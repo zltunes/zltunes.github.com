@@ -4,8 +4,30 @@
 
     
   <url>
+    <loc>https://zltunes.github.io/2019/04/10/app-statistics-report/</loc>
+    <lastmod>2019-04-10T15:19:35.967Z</lastmod>
+    <data>
+        <display>
+        <title>客户端数据埋点方案优化</title>
+        <pubTime>2019-04-10T15:06:47.592Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+        <tag>Android</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://zltunes.github.io/2019/03/10/uitextview-max-length/</loc>
-    <lastmod>2019-03-10T06:51:03.162Z</lastmod>
+    <lastmod>2019-03-10T06:52:09.123Z</lastmod>
     <data>
         <display>
         <title>UITextView 输入字数限制</title>
