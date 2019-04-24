@@ -1,0 +1,88 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>UITextView 输入字数限制 | zltunes</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/8.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-dark.min.css"><link rel="stylesheet" type="text/css" href="/css/code-number.css?v=0.0.0"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script><script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><script type="text/javascript" src="/js/code-number.js?v=0.0.0"></script></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">UITextView 输入字数限制</h1><a id="logo" href="/.">zltunes</a><p class="description">赵磊的博客</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/work/"><i class="fa fa-building"> 项目</i></a><a href="/resume/resume.pdf"><i class="fa fa-file"> 简历</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">UITextView 输入字数限制</h1><div class="post-meta">Apr 24, 2019<span> | </span><span class="category"><a href="/categories/iOS/">iOS</a></span></div><div class="post-content"><p>最近需求中有一个常见场景：限制用户输入框的文字长度。乍一看很简单其实坑不少，网上的解决方案都不够严谨，记录一下。<br><a id="more"></a><br>一看这个需求立马想到监听文字变化通知<code>UITextView.textDidChangeNotification</code>：</p>
+<pre><code class="Swift">NotificationCenter.default.addObserver(self, selector: #selector(onTextDidChange(sender:)), name: UITextView.textDidChangeNotification, object: textView)
+var textView: UITextView!
+/// 最大字数
+var maxTextSize: Int = 20
+@objc func onTextDidChange(sender: Notification) {
+   if(textView.text.count &gt; maxTextSize) 
+   {
+      textView.text= String(textView.text[..&lt;String.Index(encodedOffset: maxTextSize)])
+   }
+}
+</code></pre>
+<p>然而当使用系统自带键盘输入拼音时，会出现严重问题：你还没有选中要选的文字时,已经被键盘当做字母输入到 textView 当中了，比如用系统键盘输入“你好”，它会把<code>n i h a o</code>显示在 textView 中, 不但没有输入汉字,还每个字母占两个字符长度。<br><img src="/pic/007i4MEmgy1g0xoyzwnylg309q0hcb2a.gif" alt=""><br>处理方法是判断系统键盘输入拼音<strong>处于高亮状态时不截取字符</strong>。<br>另外注意一点，如果逻辑是先将文字铺上去，再在<code>onTextDidChange</code>去截取文字的话，被截掉的永远是末尾的文字。而我们希望的是一旦达到字数上限，用户从任意位置开始都无法继续输入文字了。<br>UITextView 有一个代理方法<br><code>- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text;</code><br>这个方法可以拦截到你即将向 textView 输入的起始位置、个数和具体文字。显然在这个方法进行输入限制更合适。</p>
+<pre><code class="Swift">func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -&gt; Bool {
+    // range: The range of characters to be replaced.(location、count)
+    // 高亮控制
+    let selectedRange = textView.markedTextRange
+    if let selectedRange = selectedRange {
+        let position =  textView.position(from: (selectedRange.start), offset: 0)
+        if position != nil {
+            let startOffset = textView.offset(from: textView.beginningOfDocument, to: selectedRange.start)
+            let endOffset = textView.offset(from: textView.beginningOfDocument, to: selectedRange.end)
+            let offsetRange = NSMakeRange(startOffset, endOffset - startOffset) // 高亮部分起始位置
+            if offsetRange.location &lt; maxTextSize {
+                // 高亮部分先不进行字数统计
+                return true
+            } else {
+                Toast.showFail(message: &quot;字数已达上限&quot;)
+                return false
+            }
+        }
+    }
+
+    // 在最末添加
+    if range.location &gt;= maxTextSize {
+        Toast.showFail(message: &quot;字数已达上限&quot;)
+        return false
+    }
+
+    // 在其他位置添加
+    if textView.text.count &gt;= maxTextSize {
+        Toast.showFail(message: &quot;字数已达上限&quot;)
+        return false
+    }
+
+    return true
+}
+</code></pre>
+<p>出现一个新问题，你会发现当字数达到上限时，用户无法删除文字或将选中文字进行 cut 或替代了。因此需要多加一个判断：</p>
+<pre><code class="Swift">    ...
+    // 在其他位置添加
+    if textView.text.count &gt;= maxTextSize &amp;&amp; range.length &lt;  text.count {
+        Toast.showFail(message: &quot;字数已达上限&quot;)
+        return false
+    }
+
+    return true
+}
+</code></pre>
+<p>这样已经实现了“阻止用户继续输入”的目的。但仅有<code>shouldChangeTextIn:</code>仍不够，当字数还未达上限，输入<strong>联想词</strong>和<strong>复制粘贴文字</strong>导致超出后，就需要进行截取了。如图：<br><img src="/pic/007i4MEmgy1g0xozzuz16g309q0hcnpe.gif" alt=""></p>
+<pre><code class="Swift">@objc func onTextDidChange(sender: Notification) {
+    if textView.text.count &gt; maxTextSize {
+        let selectRange = textView.markedTextRange
+        if let selectRange = selectRange {
+            let position =  textView.position(from: (selectRange.start), offset: 0)
+            if (position != nil) {
+                // 高亮部分不进行截取，否则中文输入会把高亮区域的拼音强制截取为字母，等高亮取消后再计算字符总数并截取
+                return
+            }
+        }
+
+        textView.text = String(textView.text[..&lt;String.Index(encodedOffset: maxTextSize)])
+
+        // 对于粘贴文字的case，粘贴结束后若超出字数限制，则让光标移动到末尾处
+        textView.selectedRange = NSRange(location: textView.text.count, length: 0)
+    }
+}
+</code></pre>
+<p>这样便把中文拼音高亮、联想词、复制粘贴等场景都考虑到了。</p>
+</div><script type="text/javascript" src="/js/share.js?v=0.0.0" async></script><a class="article-share-link" data-url="https://zltunes.github.io/2019/04/24/uitextview-max-length/" data-id="cjuusicf3000ctyrk0kygbg3n" data-qrcode="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACPUlEQVR42u3azU7DQAxF4b7/SweJHYKk59pJxYzPrCqaNvlYuP57vfA5vs/v19fXnF15dg35VOvIkCFjWcZxeQjj+npyLwI7+5QMGTLmMHgAJQ9Nwuj13/mzyZAhQwYJsjxMvwmaMmTIkPFYwK2F0VoaKkOGjMmMtLwkSSG5kt/3tlpchgwZCzI6g4GnX39oviFDhox/zDjCU2uf1dLB4KlkyJCxNaOW3pEErjYe4EPNF889ZciQsTgjbWyRArJTcBZLZRkyZIxhoOY7gF0D0tUx9K4MGTIGMGote1J8piMBkg7+8VqGDBlbM3iQrb3LC1pec8uQIWMagzT3a4PGWrBOi2cZMmTMYdyVzJEiln9/0JiTIUPGYAZH3jvITIemMmTImMAgqV5alD5RGMuQIWMmozYB5C0zXh6nxe3pcpgMGTKGMWpLGLy45e22VsCVIUPG4gxyG9Li7zPSdPB0u02GDBnbMdLDl8DS2/QXL2TIkLE3o5a0pcGXB2j+zwr2O2TIkLEsgyd/vKTkY1E+BEXRWoYMGVsz+MJW2nrj35nyTmtxGTJkbMfoNMLScMlLU/4jIUOGjAmM/jAgHQzw5hpJUn+MMGXIkLEpo9a4T8eN6S9ACpYhQ8YEBm+W8VSytmbxeO9QhgwZizM6CxCdQWYn6L/pHcqQIWMkIx0h1NI+Hu5vm1HIkCFjOwYfHqSVdDpUaAVcGTJkLMjgS12k4EwXv3j6GE9iZciQsQUjLSD5ODMF3JAgypAhYzfGF1jb+gjDRifhAAAAAElFTkSuQmCC">分享</a><div class="tags"><a href="/tags/iOS/">iOS</a></div><div class="post-nav"><a class="pre" href="/2019/04/24/dynamiccard/">DynamicCard - 基于 FlexBoxLayout 的动态排版渲染引擎</a><a class="next" href="/2019/04/24/cross-platform-app/">客户端跨平台开发技术对比</a></div><div id="lv-container" data-id="city" data-uid="MTAyMC8zNjkyMi8xMzQ1OA=="><script>(function(d, s) {
+   var j, e = d.getElementsByTagName(s)[0];
+   if (typeof LivereTower === 'function') { return; }
+   j = d.createElement(s);
+   j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+   j.async = true;
+   e.parentNode.insertBefore(j, e);
+})(document, 'script');
+</script></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="https://zltunes.github.io"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/web/">web</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Messages/" style="font-size: 15px;">Messages</a> <a href="/tags/HTTPS/" style="font-size: 15px;">HTTPS</a> <a href="/tags/iOS/" style="font-size: 15px;">iOS</a> <a href="/tags/iPhone/" style="font-size: 15px;">iPhone</a> <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/swichphone/" style="font-size: 15px;">换机</a> <a href="/tags/dynamic/" style="font-size: 15px;">动态化</a> <a href="/tags/notification/" style="font-size: 15px;">通知</a> <a href="/tags/区块链/" style="font-size: 15px;">区块链</a> <a href="/tags/JSPatch/" style="font-size: 15px;">JSPatch</a> <a href="/tags/sourcecode/" style="font-size: 15px;">源码</a> <a href="/tags/rails/" style="font-size: 15px;">rails</a> <a href="/tags/web/" style="font-size: 15px;">web</a> <a href="/tags/ReactiveCocoa/" style="font-size: 15px;">ReactiveCocoa</a> <a href="/tags/ROS/" style="font-size: 15px;">ROS</a> <a href="/tags/robot/" style="font-size: 15px;">机器人</a> <a href="/tags/AVFoundation/" style="font-size: 15px;">AVFoundation</a></div></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">zltunes.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.css"><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
