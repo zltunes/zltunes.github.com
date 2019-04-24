@@ -4,16 +4,16 @@
 
     
   <url>
-    <loc>https://zltunes.github.io/2019/04/24/avplayer-best-practice/</loc>
-    <lastmod>2019-04-23T16:38:31.957Z</lastmod>
+    <loc>https://zltunes.github.io/2019/04/10/app-statistics-report/</loc>
+    <lastmod>2019-04-24T03:34:22.152Z</lastmod>
     <data>
         <display>
-        <title>AVPlayer 边下边播与最佳实践</title>
-        <pubTime>2019-04-23T16:24:16.614Z</pubTime>
+        <title>客户端数据埋点方案优化</title>
+        <pubTime>2019-04-10T15:06:47.592Z</pubTime>
         
         <tag>iOS</tag>
          
-        <tag>AVFoundation</tag>
+        <tag>Android</tag>
          
          
            
@@ -26,16 +26,16 @@
 
     
   <url>
-    <loc>https://zltunes.github.io/2019/04/10/app-statistics-report/</loc>
-    <lastmod>2019-04-10T15:19:35.967Z</lastmod>
+    <loc>https://zltunes.github.io/2019/04/24/avplayer-best-practice/</loc>
+    <lastmod>2019-04-23T16:38:31.957Z</lastmod>
     <data>
         <display>
-        <title>客户端数据埋点方案优化</title>
-        <pubTime>2019-04-10T15:06:47.592Z</pubTime>
+        <title>AVPlayer 边下边播与最佳实践</title>
+        <pubTime>2019-04-23T16:24:16.614Z</pubTime>
         
         <tag>iOS</tag>
          
-        <tag>Android</tag>
+        <tag>AVFoundation</tag>
          
          
            
