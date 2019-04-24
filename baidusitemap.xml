@@ -4,6 +4,50 @@
 
     
   <url>
+    <loc>https://zltunes.github.io/2019/03/10/uitextview-max-length/</loc>
+    <lastmod>2019-04-24T04:49:21.425Z</lastmod>
+    <data>
+        <display>
+        <title>UITextView 输入字数限制</title>
+        <pubTime>2019-03-10T06:42:56.243Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2019/03/08/cross-platform-app/</loc>
+    <lastmod>2019-04-24T04:47:38.415Z</lastmod>
+    <data>
+        <display>
+        <title>客户端跨平台开发技术对比</title>
+        <pubTime>2019-03-08T08:53:22.177Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+        <tag>Android</tag>
+         
+        <tag>动态化</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://zltunes.github.io/2019/04/10/app-statistics-report/</loc>
     <lastmod>2019-04-24T03:34:22.152Z</lastmod>
     <data>
@@ -48,26 +92,6 @@
 
     
   <url>
-    <loc>https://zltunes.github.io/2019/03/10/uitextview-max-length/</loc>
-    <lastmod>2019-03-10T06:52:09.123Z</lastmod>
-    <data>
-        <display>
-        <title>UITextView 输入字数限制</title>
-        <pubTime>2019-03-10T06:42:56.243Z</pubTime>
-        
-        <tag>iOS</tag>
-         
-         
-           
-             
-              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
     <loc>https://zltunes.github.io/2019/03/08/about-https/</loc>
     <lastmod>2019-03-10T06:44:16.479Z</lastmod>
     <data>
@@ -81,30 +105,6 @@
            
              
               <breadCrumb title="web" url="https://zltunes.github.io/categories/web/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2019/03/08/cross-platform-app/</loc>
-    <lastmod>2019-03-08T12:06:11.896Z</lastmod>
-    <data>
-        <display>
-        <title>客户端跨平台开发技术对比</title>
-        <pubTime>2019-03-08T08:53:22.177Z</pubTime>
-        
-        <tag>iOS</tag>
-         
-        <tag>Android</tag>
-         
-        <tag>动态化</tag>
-         
-         
-           
-             
-              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
           
         </display>
     </data>
