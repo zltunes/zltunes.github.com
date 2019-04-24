@@ -82,9 +82,9 @@
       
         <tags>
             
-            <tag> iOS </tag>
-            
             <tag> Android </tag>
+            
+            <tag> iOS </tag>
             
         </tags>
       
@@ -105,9 +105,9 @@
       
         <tags>
             
-            <tag> iOS </tag>
-            
             <tag> Android </tag>
+            
+            <tag> iOS </tag>
             
             <tag> 动态化 </tag>
             
@@ -318,9 +318,9 @@
       
         <tags>
             
-            <tag> rails </tag>
-            
             <tag> web </tag>
+            
+            <tag> rails </tag>
             
         </tags>
       
@@ -408,13 +408,34 @@
       
         <tags>
             
+            <tag> Android </tag>
+            
             <tag> iOS </tag>
             
             <tag> iPhone </tag>
             
-            <tag> Android </tag>
-            
             <tag> 换机 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
+      <title>Google Guetzli 图片透明优化方案调研</title>
+      <link href="/2018/10/17/google-guetzli/"/>
+      <url>/2018/10/17/google-guetzli/</url>
+      <content type="html"><![CDATA[<p>介绍一种谷歌开源的新的 JPEG 图片压缩算法，以及和 libjpeg/webP/sharpP 的对比。<br><a id="more"></a></p><h1 id="结论要点"><a href="#结论要点" class="headerlink" title="结论要点"></a>结论要点</h1><ul><li>效果：Guetzli 算法可在图片质量不变的情况下，将 JPEG 文件大小降低35%.</li><li>原理：聚焦 JPEG 压缩算法流程的量化阶段；利用 Butteraugli 图像差异算法确定应该保留和丢弃哪些颜色和细节。</li><li>优势：相比 webP/sharpP，优势在于压缩后仍为标准 JPG 格式，无兼容问题；相比libjpeg，优势在于相同质量系数下，压缩率更低。</li><li>劣势：编码耗资源、时间长。</li></ul><h1 id="JPEG-压缩算法简介"><a href="#JPEG-压缩算法简介" class="headerlink" title="JPEG 压缩算法简介"></a>JPEG 压缩算法简介</h1><p><a href="http://blog.csdn.net/carson2005/article/details/7753499" target="_blank" rel="noopener">这篇文章</a>详细阐述了 JPEG 图像的压缩算法，基本系统的JPEG压缩编码算法一共分为11个步骤。为方便理解，这11个步骤又可以简化为三个过程：<strong>色彩空间变换——离散余弦变换——量化阶段</strong>。<br>前两个过程将图像数据转换为 DCT 频率系数，有些复杂，但不是该技术的核心。可以理解为在前两项技术压缩大小已经固定的情况下，<strong>优化最后一项量化阶段</strong>。而量化阶段的操作有点类似很多图像处理软件的“另存为”：选择的视觉质量越小，它就损失越多，图片就会被压缩越小。但这个量化阶段的重点是如何取舍图像质量和图像大小这些细节问题。</p><h1 id="Guetzli-原理"><a href="#Guetzli-原理" class="headerlink" title="Guetzli 原理"></a>Guetzli 原理</h1><p>量化阶段需要两个8*8量化矩阵数据，一个是专门处理亮度的频率系数，另一个是针对色度的频率系数，将频率系数除以量化矩阵的值之后取整，即完成了量化过程。当频率系数经过量化之后，将频率系数由浮点数转变为整数，这才便于执行最后的编码。<br>下图是常用 JPEG 的亮度量化表和色度量化表，该量化表是从广泛的实验中得出的。我们也可以自定义量化表。量化表是控制 JPEG 压缩比的关键，这个步骤除掉了一些高频量, 损失了很多细节信息。但事实上人眼对高频信号的敏感度远没有低频信号那么敏感。所以处理后的视觉损失很小，压缩方案的优化方向是在一定程度上得到<strong>相对清晰的图像和更高的压缩率</strong>。<br><img src="/pic/Guetzli1.png" alt=""><br><img src="/pic/Guetzli2.png" alt=""><br>Guetzli算法就是在这个步骤引入了一个叫做 <strong>Butteraugli</strong> 的精神视觉模型——它用来决定保存哪些颜色或者细节、压缩掉哪些细节，从而达到人们视觉上的最优，且图像文件更小。<br>这个模型如何以一种更全面更详细的方式来结合色彩感知和视觉掩蔽，从而在最小化损失和最小化图像尺寸中达到平衡？大致遵循如下的评价体系：</p><ul><li>人眼对强黄色光附近蓝光变化是不敏感的，因此黄光区域附近的蓝光可以用更少的bit来编码。</li><li>人眼对蓝光有着较低的空间分辨率，视网膜中用于分辨高清细节的区域没有蓝色光的受体，故高频区域的蓝色光部分可以用更粗的粒度编码。</li><li>将图像中的噪声区域分辨出来进行粗粒度的编码。</li></ul><p>基于这三点，Guetzli主要从两方面下手来进行：</p><ul><li>对全局量化表进行微调，枚举很多张 JPG 的全局量化表，看哪个量化表更合适。</li><li>对 DCT 系数的高频部分进行有选择的丢弃。</li></ul><p>Guetzli 算法的一次优化大致分为三个阶段：<br><img src="/pic/Guetzli3.jpeg" alt=""></p><h1 id="压缩效果肉眼观察质量"><a href="#压缩效果肉眼观察质量" class="headerlink" title="压缩效果肉眼观察质量"></a>压缩效果肉眼观察质量</h1><p><img src="/pic/Guetzli4.png" alt=""><br>（猫眼图）左为原图，中为 libjpeg 的处理，右为 Guetzli。<br>第三张看起来颜色较淡；猫眼之外第三张比第二张像素块更少。<br><img src="/pic/Guetzli5.png" alt=""><br>（天空中的一条电线）左为原图，中为 libjpeg 的处理，右为 Guetzli。<br>可以看出第二张和第三张电线均出现像素块，电线之外的天空里第三张像素块比第二张更少。</p><h1 id="可用性"><a href="#可用性" class="headerlink" title="可用性"></a>可用性</h1><p>公司有部门通过比较 libjpeg, guettzli, webp 的压缩率、压缩延时、压缩资源、解压性能，对 guetilz 在线上的可用性进行了评估。根据试验结果总结表格如下：<br><img src="/pic/Guetzli6.jpeg" alt=""><br>从表格看出：</p><ul><li>相比webp， guettzli 优势在于更广的兼容性，此外网络环境越好， guettzli 解压效率越高。</li><li>相比流行的 libjpeg 算法，其优势在于在压缩后图片质量表现差不多的情况下，guettzli 压缩率表现更好。</li><li>guettzli 最大的缺点是编码过程耗资源和时间。</li></ul><p><img src="/pic/Guetzli7.jpeg" alt=""></p><ul><li>整体压缩效果 guetzli &gt; libjpg（优12%-33%）.</li><li>guetzli在高质量系数下，压缩率表现更好。</li></ul>]]></content>
+      
+      <categories>
+          
+          <category> web </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> web </tag>
             
         </tags>
       
@@ -461,6 +482,27 @@
             <tag> iOS </tag>
             
             <tag> Messages </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
+      <title>Cloak&amp;Dagger —— 一种新型Android点击劫持漏洞</title>
+      <link href="/2017/09/18/cloak&amp;dagger/"/>
+      <url>/2017/09/18/cloak&amp;dagger/</url>
+      <content type="html"><![CDATA[<p><a href="http://cloak-and-dagger.org/" target="_blank" rel="noopener">Cloak&amp;Dagger</a> 是一种可出现于目前所有版本 Android 系统（&lt;8.0）的新型攻击技术，手机上安装恶意 APP 后，黑客能悄悄获取到目标 Android 设备的完整控制权，进而窃取到用户包括键盘记录、聊天数据、设备PIN码、在线账号密码、OTP密码和通讯录在内的多种隐私数据。针对该漏洞 Google 将在 Android O 版本通过加强权限检查机制来减少感染机会，但暂时还没有彻底封堵该漏洞的方案。</p><h1 id="攻击产生原理及场景"><a href="#攻击产生原理及场景" class="headerlink" title="攻击产生原理及场景"></a>攻击产生原理及场景</h1><p>Cloak&amp;Dagger 不需要利用 Android 生态系统中的任何安全漏洞，利用的是 Android 设备中两大合法基础权限：</p><ol><li>SYSTEM_ALERT_WINDOW (“draw on top”)：允许App在设备屏幕上显示额外的叠加窗口来覆盖其他的App界面。</li><li>BIND_ACCESSIBILITY_SERVICE (“a11y”)：帮助包括盲人和视力障碍用户在内的残疾人用户更好地通过语音命令来输入信息或通过屏幕阅读功能来了解屏幕内容。</li></ol><p>从2015年10月份发布的 Android Marshmallow（Version6）开始，Google 默认 会给那些直接从 GooglePlay 应用商店下载并安装的App提供”SYSTEM_ALERT_WINDOW”(“draw on top”)权限。有了这两个权限，恶意 APP 通过使用 TYPE_TOAST 类型窗口即可实现一系列监控与劫持的操作。</p><h2 id="示例1：获取用户键盘输入内容"><a href="#示例1：获取用户键盘输入内容" class="headerlink" title="示例1：获取用户键盘输入内容"></a>示例1：获取用户键盘输入内容</h2><p><img src="/pic/CloakDagger1.png" alt=""><br>如图，由于 TYPE_TOAST 类型窗口允许某APP在另一APP界面上方覆盖悬浮窗，且不需要请求 SYSTEM_ALERT_WINDOW 权限，恶意 APP 便可在用户无法察觉的情况下获取用户键盘输入的内容（实际攻击过程中该网格设置为不可见）。</p><h2 id="示例2：劫持用户点击，实现静默安装恶意-APP"><a href="#示例2：劫持用户点击，实现静默安装恶意-APP" class="headerlink" title="示例2：劫持用户点击，实现静默安装恶意 APP"></a>示例2：劫持用户点击，实现静默安装恶意 APP</h2><p>该示例展示了一个看似为教学APP，实为诱导用户点击某一特定区域，以开启系统 Accessibility 权限，利用 Accessibility 的检测视图以及模拟点击功能，进行恶意安装。<br><img src="/pic/CloakDagger2.png" alt=""><br><img src="/pic/CloakDagger3.png" alt=""><br>左边为用户看到的教学demo，右边为诱导用户开启 Accessibility 权限。最后用户观看视频的过程中背后完成了恶意 APP 的静默安装。<br>以下代码展示了上述两个攻击场景使用的两种 Toast 窗口，view1用于覆盖底部 GUI 并监听用户点击情况，view2用于诱导用户点击某一区域。<br><img src="/pic/CloakDagger4.png" alt=""></p><h1 id="漏洞解决方案"><a href="#漏洞解决方案" class="headerlink" title="漏洞解决方案"></a>漏洞解决方案</h1><p>查看 framework 相关源码可发现，通常在其他 APP 页面最上层展示悬浮窗口是需要进行权限检查（Permission Check）和操作检查（Operation Check）的，但如果是 TYPE_TOAST 窗口则不需要，权限自动开启。<br><img src="/pic/CloakDagger5.jpeg" alt=""><br>因此该漏洞是由于 Android 操作系统底层涉及缺陷导致的（涉及到两个标准功能，但这两个功能的行为符合系统预期），Google暂时未提供解决方案，但Google计划在 “Android O” 版本修改原有策略，增加合适的权限检查。<br>在 Android 7.1.2 上，防止 Cloak&amp;Dagger 攻击最简单的方法就是手动关闭 “draw on top” 权限。</p>]]></content>
+      
+      <categories>
+          
+          <category> Android </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Android </tag>
             
         </tags>
       

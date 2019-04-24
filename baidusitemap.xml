@@ -73,9 +73,9 @@
         <title>客户端数据埋点方案优化</title>
         <pubTime>2019-04-20T16:00:00.000Z</pubTime>
         
-        <tag>iOS</tag>
-         
         <tag>Android</tag>
+         
+        <tag>iOS</tag>
          
          
            
@@ -95,9 +95,9 @@
         <title>客户端跨平台开发技术对比</title>
         <pubTime>2019-04-19T16:00:00.000Z</pubTime>
         
-        <tag>iOS</tag>
-         
         <tag>Android</tag>
+         
+        <tag>iOS</tag>
          
         <tag>动态化</tag>
          
@@ -299,9 +299,9 @@
         <title>Ruby on Rails 初探</title>
         <pubTime>2019-04-10T16:00:00.000Z</pubTime>
         
-        <tag>rails</tag>
-         
         <tag>web</tag>
+         
+        <tag>rails</tag>
          
          
            
@@ -341,11 +341,11 @@
         <title>iPhone & Android 换机通信方案分析</title>
         <pubTime>2019-03-08T08:56:40.000Z</pubTime>
         
+        <tag>Android</tag>
+         
         <tag>iOS</tag>
          
         <tag>iPhone</tag>
-         
-        <tag>Android</tag>
          
         <tag>换机</tag>
          
@@ -447,5 +447,45 @@
     </url>
 
     
+  <url>
+    <loc>https://zltunes.github.io/2018/10/17/google-guetzli/</loc>
+    <lastmod>2018-10-16T16:00:00.000Z</lastmod>
+    <data>
+        <display>
+        <title>Google Guetzli 图片透明优化方案调研</title>
+        <pubTime>2018-10-16T16:00:00.000Z</pubTime>
+        
+        <tag>web</tag>
+         
+         
+           
+             
+              <breadCrumb title="web" url="https://zltunes.github.io/categories/web/"/>
+          
+        </display>
+    </data>
+    </url>
+
     
+    
+    
+  <url>
+    <loc>https://zltunes.github.io/2017/09/18/cloak&dagger/</loc>
+    <lastmod>2017-09-17T16:00:00.000Z</lastmod>
+    <data>
+        <display>
+        <title>Cloak&Dagger —— 一种新型Android点击劫持漏洞</title>
+        <pubTime>2017-09-17T16:00:00.000Z</pubTime>
+        
+        <tag>Android</tag>
+         
+         
+           
+             
+              <breadCrumb title="Android" url="https://zltunes.github.io/categories/Android/"/>
+          
+        </display>
+    </data>
+    </url>
+
 </urlset>
