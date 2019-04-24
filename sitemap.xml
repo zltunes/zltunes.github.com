@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://zltunes.github.io/2019/04/24/dynamiccard/</loc>
+    
+    <lastmod>2019-04-24T06:41:52.119Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://zltunes.github.io/2019/04/24/reactivecocoa-tutorial/</loc>
+    
+    <lastmod>2019-04-24T06:33:26.631Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://zltunes.github.io/2019/04/24/rails-tutorial/</loc>
     
     <lastmod>2019-04-24T06:30:13.520Z</lastmod>
@@ -30,13 +44,6 @@
   </url>
   
   <url>
-    <loc>https://zltunes.github.io/2019/04/24/dynamiccard/</loc>
-    
-    <lastmod>2019-04-24T06:24:30.584Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://zltunes.github.io/2019/04/24/dynamic-height-cell/</loc>
     
     <lastmod>2019-04-24T06:22:07.532Z</lastmod>
@@ -61,13 +68,6 @@
     <loc>https://zltunes.github.io/2019/04/24/robot-operating-system-intro/</loc>
     
     <lastmod>2019-04-24T05:29:42.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://zltunes.github.io/2019/04/24/reactivecocoa-tutorial/</loc>
-    
-    <lastmod>2019-04-24T05:17:34.000Z</lastmod>
     
   </url>
   
