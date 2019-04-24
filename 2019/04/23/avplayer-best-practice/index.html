@@ -1,0 +1,421 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>AVPlayer 边下边播与最佳实践 | zltunes</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/8.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-dark.min.css"><link rel="stylesheet" type="text/css" href="/css/code-number.css?v=0.0.0"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script><script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><script type="text/javascript" src="/js/code-number.js?v=0.0.0"></script></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">AVPlayer 边下边播与最佳实践</h1><a id="logo" href="/.">zltunes</a><p class="description">赵磊的博客</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/work/"><i class="fa fa-building"> 项目</i></a><a href="/resume/resume.pdf"><i class="fa fa-file"> 简历</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">AVPlayer 边下边播与最佳实践</h1><div class="post-meta">Apr 23, 2019<span> | </span><span class="category"><a href="/categories/iOS/">iOS</a></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#使用-AVAssetResourceLoader-实现边下边播"><span class="toc-number">1.</span> <span class="toc-text">使用 AVAssetResourceLoader 实现边下边播</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#基本原理"><span class="toc-number">1.1.</span> <span class="toc-text">基本原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现"><span class="toc-number">1.2.</span> <span class="toc-text">实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#必要的配置：自定义-URLScheme-来创建-AVPlayerItem"><span class="toc-number">1.2.1.</span> <span class="toc-text">必要的配置：自定义 URLScheme 来创建 AVPlayerItem</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现-AVAssetResourceLoaderDelegate-协议"><span class="toc-number">1.2.2.</span> <span class="toc-text">实现 AVAssetResourceLoaderDelegate 协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#视频下载任务管理（简单分块）"><span class="toc-number">1.2.3.</span> <span class="toc-text">视频下载任务管理（简单分块）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#把请求返回数据输出到-loadingRequest-VideoDownloadProgressHandler"><span class="toc-number">1.2.4.</span> <span class="toc-text">把请求返回数据输出到 loadingRequest (VideoDownloadProgressHandler)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#视频缓存管理"><span class="toc-number">1.2.5.</span> <span class="toc-text">视频缓存管理</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#AVPlayer-一级封装"><span class="toc-number">2.</span> <span class="toc-text">AVPlayer 一级封装</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#kvo-监听-playerItem-加载和缓冲状态"><span class="toc-number">2.1.</span> <span class="toc-text">kvo 监听 playerItem 加载和缓冲状态</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#播放进度监控"><span class="toc-number">2.2.</span> <span class="toc-text">播放进度监控</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#播放完成、错误通知"><span class="toc-number">2.3.</span> <span class="toc-text">播放完成、错误通知</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#外部环境通知"><span class="toc-number">2.4.</span> <span class="toc-text">外部环境通知</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#使用问题记录"><span class="toc-number">3.</span> <span class="toc-text">使用问题记录</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#AVPlayer-最佳实践"><span class="toc-number">3.1.</span> <span class="toc-text">AVPlayer 最佳实践</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#获取视频播放总时间，playerItem-duration-返回nan"><span class="toc-number">3.2.</span> <span class="toc-text">获取视频播放总时间，playerItem.duration 返回nan</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#播放错误处理"><span class="toc-number">3.3.</span> <span class="toc-text">播放错误处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#开始播放的时机"><span class="toc-number">3.4.</span> <span class="toc-text">开始播放的时机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#UITableView-视频列表"><span class="toc-number">3.5.</span> <span class="toc-text">UITableView 视频列表</span></a></li></ol></li></ol></div></div><div class="post-content"><p>近期工作项目中加入了<a href="https://itunes.apple.com/cn/app/taiq/id1437741103?mt=8" target="_blank" rel="noopener">视频广场</a>的功能，基于 AVPlayer 依次完成了底层视频边下边播的缓存框架、自定义的视频播放控制器、TableView 视频播放列表。本文整理一下边下边播的实现原理和使用 AVPlayer 遇到的一些坑。<br><a id="more"></a><br>相关代码开源在视频播放器<a href="https://github.com/zltunes/ZLPlayer" target="_blank" rel="noopener">ZLPlayer</a>, 支持边下边播，简单分片缓存。提供视频加载进度、播放进度、缓冲进度、播放错误处理、seek操作等回调接口。<br><img src="https://ae01.alicdn.com/kf/HTB1QsjHShTpK1RjSZR0762EwXXa8.png" alt=""></p>
+<h1 id="使用-AVAssetResourceLoader-实现边下边播"><a href="#使用-AVAssetResourceLoader-实现边下边播" class="headerlink" title="使用 AVAssetResourceLoader 实现边下边播"></a>使用 AVAssetResourceLoader 实现边下边播</h1><p>AVPlayer 是支持直接从一个 url 下载并播放视频的：</p>
+<pre><code class="Swift">let urlAssrt = AVURLAsset(url: URL(string: mediaUrl))
+let playerItem = AVPlayerItem(asset: urlAssrt)
+let player = AVPlayer(playerItem: playerItem)
+</code></pre>
+<p>但 AVPlayer 没有提供方法给我们直接获取它下载下来的数据，无法对下载过程进行干预控制如seek操作，也不支持分片缓存。AVAssetResourceLoader 通过委托对象去调节 AVURLAsset 所需要的加载资源，包括获取 AVPlayer 需要的数据信息、决定传递多少数据给 AVPlayer 等，可操作的自由度更高，因此最终采用这种方式实现。各层级关系如下：<br><img src="https://ae01.alicdn.com/kf/HTB1Ou0MRMHqK1RjSZJn762NLpXap.png" alt=""></p>
+<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><p><strong>AVAssetResourceLoader 仅在 AVURLAsset 不知道如何去加载这个 URL 资源时才会被调用</strong>，因此在初始化 AVURLAsset 的时候需要把目标视频URL地址的scheme替换为系统不能识别的scheme (这一点很重要！)， AVAssetResourceLoader 将 AVAssetResourceLoadingRequest 传给 AVAssetResourceLoaderDelegate, 我们先保存这些请求，然后通过 URLSession 自己构建下载任务。每次收到响应后把数据填充给 AVAssetResourceLoadingRequest, 并对数据进行缓存，就完成了边下边播，流程如图:<br><img src="https://ae01.alicdn.com/kf/HTB11vhNRNTpK1RjSZFM762G_VXau.png" alt=""></p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="必要的配置：自定义-URLScheme-来创建-AVPlayerItem"><a href="#必要的配置：自定义-URLScheme-来创建-AVPlayerItem" class="headerlink" title="必要的配置：自定义 URLScheme 来创建 AVPlayerItem"></a>必要的配置：自定义 URLScheme 来创建 AVPlayerItem</h3><pre><code class="Swift">var component = URLComponents(url: originalURL, resolvingAgainstBaseURL: true)!
+component.scheme = &quot;Stream&quot;
+let urlAssrt = AVURLAsset(url: component.url!)
+urlAssrt.resourceLoader.setDelegate(videoResourceLoaderDelegate, queue: videoResourceLoaderDelegate.resourceLoaderQueue)
+playerItem = AVPlayerItem(asset: urlAssrt)
+</code></pre>
+<h3 id="实现-AVAssetResourceLoaderDelegate-协议"><a href="#实现-AVAssetResourceLoaderDelegate-协议" class="headerlink" title="实现 AVAssetResourceLoaderDelegate 协议"></a>实现 AVAssetResourceLoaderDelegate 协议</h3><p>两个必须实现的方法：</p>
+<pre><code class="Swift">func resourceLoader(_ resourceLoader: AVAssetResourceLoader, shouldWaitForLoadingOfRequestedResource loadingRequest: AVAssetResourceLoadingRequest) -&gt; Bool 
+</code></pre>
+<p><strong>要求加载资源的代理方法</strong>，返回 true 表示该代理类现在可以处理该请求，我们需要在这里保存 loadingRequest 并开启下载数据的任务，下载回调中拿到响应数据后再对 loadingRequest 进行填充。</p>
+<pre><code class="Swift">func resourceLoader(_ resourceLoader: AVAssetResourceLoader, didCancel loadingRequest: AVAssetResourceLoadingRequest)
+</code></pre>
+<p><strong>AVAssetResourceLoader 取消了本次请求</strong>，此时我们需要把该 loadingRequest 移出下载任务的回调列表（停止填充）。<br>具体实现：</p>
+<pre><code class="Swift">public func resourceLoader(_ resourceLoader: AVAssetResourceLoader, shouldWaitForLoadingOfRequestedResource loadingRequest: AVAssetResourceLoadingRequest) -&gt; Bool {
+    // 启动下载任务，同时保留loadingRequest, progress 是 URLSession 响应数据的回调处理
+    VideoDownloadManager.shared.startDownload(url: originalURL, loadingRequest: loadingRequest, progress: { [weak self] (loadingRequest, task) in
+        if nil  == self {
+            return
+        }
+
+        self!.resourceLoaderQueue.async { [weak self] in
+            if nil  == self {
+                return
+            }
+
+            // 数据填充操作，具体实现见后文
+            let isFinish = self!.respondData(loadingRequest: loadingRequest!, data: task.cachedData, dataOffset: 0, contentLength: task.contentLength, mimeType: &quot;video/mp4&quot;)
+            if isFinish {
+                // loadingRequest 填充结束，需要从该下载任务的回调列表中移除
+                task.removeCallback(by: loadingRequest!)
+            }
+        }
+    }, complete: {  _,_  in
+
+    }, observer: self)
+
+    return true
+}
+</code></pre>
+<h3 id="视频下载任务管理（简单分块）"><a href="#视频下载任务管理（简单分块）" class="headerlink" title="视频下载任务管理（简单分块）"></a>视频下载任务管理（简单分块）</h3><pre><code class="Swift">    /// 启动下载任务
+    func startDownload(url: URL, loadingRequest: AVAssetResourceLoadingRequest?, progress: VideoDownloadProgressHandler?, complete: VideoDownloadCompleteHandler?, observer: VideoResourceLoader? = nil) {
+
+        // 已经存在任务（同一视频源由一个下载任务管理）
+        if let task = urlTasks[url] {
+            if let loadingRequest = loadingRequest {
+                // 添加回调
+                if let callback = VideoDownloadCallback(loadingRequest: loadingRequest, progress: progress, complete: complete) {
+                    task.addCallback(callback)
+                }
+
+                // 添加观察者
+                if let observer = observer {
+                    let weakObject = WeakObject&lt;VideoResourceLoader&gt;(target: observer)
+                    task.addObsever(weakObject)
+                }
+
+                // 回调上层（上一个 loadingRequest 填充完后 task 可能还有剩余数据，先填充）
+                if let progress = progress {
+                    progress(loadingRequest, task)
+                }
+            }
+        } else { // 创建新任务
+            // 框架支持部分缓存，当视频还未缓冲完 playerItem 即被销毁时，将本次已下载数据缓存起来
+            // 新的 task 先异步载入缓存再继续下载，从而实现“断点续传”
+            VideoCacheManager.shared.asynLoadCache(url: url) { (data, contentLength) in
+                let cacheLength = (data != nil) ? data!.count : 0
+                let isFullCache = (cacheLength &gt; 0 &amp;&amp; data!.count == contentLength!)
+
+                // 创建下载任务 
+                let request = self.createURLRequest(url: url, loadingRequest: (isFullCache ? nil : loadingRequest), cacheLength: cacheLength)
+                let dataTask = self.session.dataTask(with: request)
+                let newTask = VideoDownloadTask(url: url, dataTask: dataTask)
+
+                // 添加回调
+                if let callback = VideoDownloadCallback(loadingRequest: loadingRequest, progress: progress, complete: complete) {
+                    newTask.addCallback(callback)
+                }
+
+                // 添加观察者
+                if let observer = observer {
+                    // 注意：newTask 维护一个 observers 数组，对每个 observer 都是强引用
+                    // 避免内存泄漏，使用一个弱引用对象容器封装
+                    let weakObject = WeakObject&lt;VideoResourceLoader&gt;(target: observer)
+                    newTask.addObsever(weakObject)
+                }
+
+                // 填充缓存的数据
+                if let data = data {
+                    newTask.contentLength = contentLength!
+                    newTask.appendData(data)
+
+                    // 回调上层
+                    if let loadingRequest = loadingRequest, let progress = progress {
+                        progress(loadingRequest, newTask)
+                    }
+                }
+
+                self.urlTasks[url] = newTask
+
+                // 任务启动
+                if !isFullCache {
+                    dataTask.resume()
+                }
+            }
+        }
+    }
+
+    /// 创建下载URL请求
+    private func createURLRequest(url: URL, loadingRequest: AVAssetResourceLoadingRequest?, cacheLength: Int) -&gt; URLRequest {
+        var request = URLRequest(url: url)
+        request.cachePolicy = .reloadIgnoringLocalCacheData
+
+        // 设置Range, 如果有部分本地缓存，将缓存终点作为本次请求起点
+        if let dataRequest = loadingRequest?.dataRequest {
+            let requestedOffset = (cacheLength &gt; 0 ? Int64(cacheLength) : dataRequest.requestedOffset)
+            request.addValue(&quot;bytes=\(requestedOffset)-&quot;, forHTTPHeaderField: &quot;Range&quot;)
+        }
+
+        return request
+    }
+
+    /// 从响应请求头中获取视频文件总长度 contentLength
+    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -&gt; Void) {
+        if let downloadTask = downloadTask(for: dataTask) {
+            guard response.mimeType == &quot;video/mp4&quot; else {
+                return
+            }
+
+            // 请求头有两个字段需要关注
+            // Content-Length表示本次请求的数据长度
+            // Content-Range表示本次请求的数据在总媒体文件中的位置，格式是start-end/total，因此Content-Length = end - start + 1
+
+            if let contentRange = (response as! HTTPURLResponse).allHeaderFields[&quot;Content-Range&quot;] as? String {
+                let contentLengthString = contentRange.split(separator: &quot;/&quot;).map{String($0)}.last!
+                downloadTask.contentLength = Int(contentLengthString)!
+            } else {
+                downloadTask.contentLength = Int(response.expectedContentLength)
+            }
+        }
+
+        completionHandler(.allow)
+    }
+
+    /// 收到响应数据的处理
+    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+        if let downloadTask = downloadTask(for: dataTask) {
+            // 在已下载数据基础上填充
+            downloadTask.appendData(data)
+            let callbacks = downloadTask.callbacks
+            for callback in callbacks {
+                if let progress = callback.progressHandler {
+                    progress(callback.loadingRequest, downloadTask)
+                }
+            }
+        }
+    }
+</code></pre>
+<h3 id="把请求返回数据输出到-loadingRequest-VideoDownloadProgressHandler"><a href="#把请求返回数据输出到-loadingRequest-VideoDownloadProgressHandler" class="headerlink" title="把请求返回数据输出到 loadingRequest (VideoDownloadProgressHandler)"></a>把请求返回数据输出到 loadingRequest (VideoDownloadProgressHandler)</h3><p>这一步主要是根据 URLRequest 下载数据和 loadingRequest 请求数据的范围，计算填充的起始和结束位置，并判断是否结束填充。</p>
+<pre><code class="Swift">    private func respondData(loadingRequest: AVAssetResourceLoadingRequest, data: Data, dataOffset: Int, contentLength: Int, mimeType: String) -&gt; Bool {
+        if loadingRequest.isCancelled || loadingRequest.isFinished {
+            return false
+        }
+        // 填充信息
+        if let contentInformationRequest = loadingRequest.contentInformationRequest {
+            let contentType =  UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, mimeType as CFString, nil)?.takeRetainedValue()
+            contentInformationRequest.contentType = contentType as String?
+            contentInformationRequest.isByteRangeAccessSupported = true
+            contentInformationRequest.contentLength = Int64(contentLength)
+        }
+
+        // 填充数据
+        if let dataRequest = loadingRequest.dataRequest {
+            guard dataRequest.currentOffset &gt;= dataOffset &amp;&amp; dataRequest.currentOffset &lt; dataOffset.advanced(by: data.count) else {
+                return false // 没有可用数据
+            }
+
+            // 可用cache长度
+            let availableCacheLength = dataOffset.advanced(by: data.count).advanced(by: Int(-dataRequest.currentOffset))
+            // 待填充数据长度
+            let requestedEndIndex = (dataRequest.requestsAllDataToEndOfResource ? contentLength : Int(dataRequest.requestedOffset.advanced(by: dataRequest.requestedLength)))
+            let unreadLength = requestedEndIndex.advanced(by: Int(-dataRequest.currentOffset))
+            // 填充数据长度
+            let respondDataLength = min(availableCacheLength, Int(unreadLength))
+
+            // 计算填充数据的起点和终点，进行填充
+            let beginIndex = dataRequest.currentOffset.advanced(by: -dataOffset)
+            let endIndex = beginIndex.advanced(by: respondDataLength)
+            let respondData = data.subdata(in: Int(beginIndex)..&lt;Int(endIndex))
+            dataRequest.respond(with: respondData)
+
+            // 判断是否结束
+            if dataRequest.currentOffset &gt;= dataRequest.requestedOffset.advanced(by: dataRequest.requestedLength) {
+                loadingRequest.finishLoading()
+                return true
+            }
+        }
+
+        return false
+    }
+</code></pre>
+<p>下图可直观地表示上述代码的流程。直线表示完整的视频，直线下方是 VideoDownloadTask 的下载进度，直线上方是某一次 loadingRequest 的填充过程。通过比较 <strong>可用 cache 长度（availableCacheLength）</strong> 和 <strong>待填充数据长度（unreadLength）</strong> 可确定本次所取data的范围。包含两种情况，图1表示 availableCacheLength &gt; unreadLength, 取部分 data 填充，并调用<code>loadingRequest.finishLoading()</code>结束该loadingRequest. <strong>这一步是必需的，不然可能没有继续的请求了。</strong><br><img src="https://ae01.alicdn.com/kf/HTB1D7yLShTpK1RjSZR0762EwXXaz.png" alt=""><br>图2表示 availableCacheLength &lt; unreadLength, data 全部填充，并等待新的响应数据（didReceive data）.<br><img src="https://ae01.alicdn.com/kf/HTB1LR_dShjaK1RjSZKz760VwXXax.png" alt=""><br>如果请求遇到错误、或者请求被取消我们也需要作响应处理， 从 urlTasks 移除下载任务（移除之前先检查任务是否还有其他观察者）、中断 URLRequest、保存视频缓存。</p>
+<h3 id="视频缓存管理"><a href="#视频缓存管理" class="headerlink" title="视频缓存管理"></a>视频缓存管理</h3><p>FileManager 可以帮助我们方便地建立视频缓存管理器。统一保存在 caches/videos/, 以 url md5 值作为文件名。如果是完整视频，后缀为.mp4, 否则当临时文件缓存.tmp:</p>
+<pre><code class="Swift">/// 视频目录
+// /var/mobile/Containers/Data/Application/B78CD5EE-540B-4C6E-8B49-47EE148881AE/Library/Caches/videos
+static var videoDirectory: String = FileManager.cachesPath.appendingPathComponent(&quot;videos&quot;)
+
+/// 视频文件名(url md5值)
+static func videoFileName(url: URL) -&gt; String {
+    return url.absoluteString.md5String
+}
+
+/// 视频完整文件路径
+    static func videoFilePath(url: URL) -&gt; String {
+    let videoName = videoFileName(url: url)
+    return videoDirectory.appendingPathComponent(videoName) + &quot;.mp4&quot;
+}
+
+/// 视频临时文件路径
+static func tmpFilePath(url: URL) -&gt; String {
+    let videoName = videoFileName(url: url)
+    return videoDirectory.appendingPathComponent(videoName) + &quot;.tmp&quot;
+}
+</code></pre>
+<p>VideoCacheManager 需要提供视频缓存保存和异步载入的逻辑：</p>
+<pre><code class="Swift">    /// 保存视频缓存
+    func storeCache(with downloadTask: VideoDownloadTask, completion: (() -&gt; Void)?) {
+        ioQueue.async {
+            if !FileManager.default.fileExists(atPath: VideoCacheManager.videoDirectory) {
+                do {
+                    try FileManager.default.createDirectory(atPath: VideoCacheManager.videoDirectory, withIntermediateDirectories: true, attributes: nil)
+                } catch {
+                    print(&quot;Video|cache&quot;, &quot;create video Directory error:\(error)&quot;)
+                }
+            }
+
+            let url = downloadTask.url
+            let tmpFile = VideoCacheManager.tmpFilePath(url: url)
+
+            // 保存完整视频
+            let data = downloadTask.cachedData
+            let contentLength = downloadTask.contentLength
+            let isFinished = (data.count == contentLength)
+            if isFinished {
+                let file = VideoCacheManager.videoFilePath(url: url)
+                do {
+                    try data.write(to: URL(fileURLWithPath: file))
+                } catch {
+                    print(&quot;Video|cache&quot;, &quot;store video error:\(error)&quot;)
+                }
+
+                if FileManager.default.fileExists(atPath: tmpFile) {
+                    do  {
+                        try FileManager.default.removeItem(atPath: tmpFile)
+                    } catch {
+                        print(&quot;Video|cache&quot;, &quot;remove video tmp file error:\(error)&quot;)
+                    }
+                }
+            } else { // 保存临时视频信息
+                let tmpInfo = [kDataKey: data, kContentLengthKey: contentLength] as [String : Any]
+                let success = NSKeyedArchiver.archiveRootObject(tmpInfo, toFile: tmpFile)
+                if !success {
+                    print(&quot;Video|cache&quot;, &quot;store video tmp file error&quot;)
+                }
+            }
+
+            completion?()
+        }
+    }
+</code></pre>
+<p>至此一个支持简单分片、边下边播的视频缓存框架便完成了。「简单分片」的原因是暂不支持进度条seek操作。data 缓存一直是从0开始，这次缓存0-x%, 下次便从 x 处接着下载。支持seek的一个思路：</p>
+<ol>
+<li>seek 到已下载填充部分，直接 seek 成功；</li>
+<li>seek 到未下载部分，如下载进度60%, seek至70%, 则取消现有的 URLSessionDataTask 并删除已缓存数据, 创建新的 URLRequest 设置<code>Range</code>为70%, 请求和填充数据范围70%-100%. 事实上 AVPlayer 对 loadingRequest 也是这么处理的， seek 之后旧的 loadingRequest 会被 cancel, 创建新的 loadingRequest, dataRequest.requestedOffset 也会变成 seek 处的值；</li>
+<li>若此时又 seek 到40%, 则新建任务下载范围是 40%-100%. 开始新的下载后，由于文件不完整，下载完的数据不再保存。</li>
+</ol>
+<h1 id="AVPlayer-一级封装"><a href="#AVPlayer-一级封装" class="headerlink" title="AVPlayer 一级封装"></a>AVPlayer 一级封装</h1><p>AVPlayer 需要手动实现播放逻辑，用法都大同小异。先使用 AVPlayerItem 实例初始化 AVPlayer, 然后使用 AVPlayer 实例初始化 AVPlayerLayer 实例，接着需要添加几类监听：</p>
+<h2 id="kvo-监听-playerItem-加载和缓冲状态"><a href="#kvo-监听-playerItem-加载和缓冲状态" class="headerlink" title="kvo 监听 playerItem 加载和缓冲状态"></a>kvo 监听 playerItem 加载和缓冲状态</h2><pre><code class="Swift">func addObserver(to playerItem: AVPlayerItem?) {
+    if playerItem != nil {
+        //监控视频加载状态
+        playerItem?.addObserver(self, forKeyPath: &quot;status&quot;, options: .new, context: nil)
+        //监控网络加载情况
+        playerItem?.addObserver(self, forKeyPath: &quot;loadedTimeRanges&quot;, options: .new, context: nil)
+        //正在缓冲
+        playerItem?.addObserver(self, forKeyPath: &quot;playbackBufferEmpty&quot;, options: .new, context: nil)
+        //缓冲结束，可无延迟播放
+        playerItem?.addObserver(self, forKeyPath: &quot;playbackLikelyToKeepUp&quot;, options: .new, context: nil)
+    }
+}
+</code></pre>
+<h2 id="播放进度监控"><a href="#播放进度监控" class="headerlink" title="播放进度监控"></a>播放进度监控</h2><pre><code class="Swift">func addProgressObserver() {
+    //这里设置每秒执行一次
+    let interval = CMTime(value: 1, timescale: 1)
+    playTimeObserverToken = player?.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main, using: { [weak self] time in
+        guard let `self` = self else {
+            return
+        }
+        self.currentPlayTime = CMTimeGetSeconds(time)
+        // 自定义行为，更新播放进度条等...
+    })
+}
+</code></pre>
+<h2 id="播放完成、错误通知"><a href="#播放完成、错误通知" class="headerlink" title="播放完成、错误通知"></a>播放完成、错误通知</h2><pre><code class="Swift">func addNotification() {
+    //给 playerItem 添加播放完成通知
+    NotificationCenter.default.addObserver(self, selector: #selector(self.playbackFinished(_:)), name: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
+
+    //给 playerItem 添加播放错误通知
+    NotificationCenter.default.addObserver(self, selector: #selector(self.playbackFail(_:)), name: .AVPlayerItemFailedToPlayToEndTime, object: player?.currentItem)
+}
+</code></pre>
+<h2 id="外部环境通知"><a href="#外部环境通知" class="headerlink" title="外部环境通知"></a>外部环境通知</h2><pre><code class="Swift">//app进入后台
+NotificationCenter.default.addObserver(self, selector: #selector(appResignActive(_:)), name: UIApplication.willResignActiveNotification, object: nil)
+//app进入前台
+NotificationCenter.default.addObserver(self, selector: #selector(appBecomeActive(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
+
+// 监听耳机插入和拔掉通知
+NotificationCenter.default.addObserver(self, selector: #selector(audioRouteChangeListenerCallback(_:)), name: AVAudioSession.routeChangeNotification, object: nil)
+//中断处理(播放过程中有打电话等系统事件)
+NotificationCenter.default.addObserver(self, selector: #selector(handleInterruption(_:)), name: AVAudioSession.interruptionNotification, object: nil)
+
+// 通过 AVAudioSession 设置自己的APP是否和其他APP音频同时存在，是否会被静音键或锁屏键静音等
+AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.playback /*允许后台*/, options: .mixWithOthers /*混合播放，不独占*/)
+</code></pre>
+<p>以上基本实现了通过 AVPlayer 控制并监听视频播放进度，代码开源在 Github. 包括边下边播的缓存逻辑，并提供了一个通用播放器 ZLAVPlayer, 将视频加载状态、播放进度、缓冲进度、播放错误、seek等操作通过闭包或代理的方式对外提供回调，你可以对 ZLAVPlayer 进行二级封装，自定义播放暂停按钮、进度条、加载动画等UI元素，只需要在 init 的时候提供视频 url 和实现各个回调。 </p>
+<pre><code class="Swift">var zlAVPlayer = ZLAVPlayer(withURL: url,
+    process: { [weak self] (player, progress) in
+     print(&quot;当前播放进度：\(progress), 当前播放时间：\(player.currentPlayTime).&quot;)
+
+    }, compelete: { (player) in
+        print(&quot;播放结束.&quot;)
+
+    }, loadStatus: { (player, status) in
+        if status == .readyToPlay {
+            print(&quot;加载状态：准备完毕，可以播放。视频总时长：\(player.totalTime).&quot;)
+        } else if status == .unknown {
+            print(&quot;加载状态：未知状态，此时不能播放.&quot;)
+        } else if status == .failed {
+            print(&quot;加载状态：加载失败，网络或者服务器出现问题：\(player.playerItem.error).&quot;)
+        }
+
+    }, bufferPercent: {  (player, bufferPercent) in
+        print(&quot;缓冲进度: \(bufferPercent).&quot;)
+
+    }, willSeek: { (player, curtPos, toPos) in
+        print(&quot;即将seek.&quot;)
+        player.setSeek(to: toPos)
+
+    }, seekComplete: { (player, prePos, curtPos) in
+        print(&quot;seek 结束.&quot;)
+
+    }, buffering: { (player) in
+        print(&quot;可用缓冲耗尽，将停止播放.&quot;)
+        player.pause()
+
+    }, bufferFinish: { (player) in
+        print(&quot;可无延迟播放.&quot;)
+        player.play()
+
+    }, error: { (player, error) in
+        print(&quot;播放出错: \(error).&quot;)
+})
+</code></pre>
+<h1 id="使用问题记录"><a href="#使用问题记录" class="headerlink" title="使用问题记录"></a>使用问题记录</h1><h2 id="AVPlayer-最佳实践"><a href="#AVPlayer-最佳实践" class="headerlink" title="AVPlayer 最佳实践"></a>AVPlayer 最佳实践</h2><p>首次创建 player 实例一般按照以下步骤：</p>
+<pre><code class="Swift">// 1. 初始化AVAsset
+let asset = AVURLAsset(url: url)
+
+// 2. 根据AVAsset初始化AVPlayerItem
+let playerItem = AVPlayerItem(asset: asset)
+
+// 3. 根据AVPlayerItem初始化AVPlayer
+let player = AVPlayer(playerItem: playerItem)
+
+// 4. 绑定AVPlayer至AVPlayerLayer，显示内容。
+let playerLayer = AVPlayerLayer(player: player)
+</code></pre>
+<p>第3步执行时，由于 player 没有绑定到layer，此时系统只会准备音频相关的资源。到第4步执行时，系统会把之前准备好的音频资源重置，重新绑定音视频资源。这里会有一定程度的资源消耗，系统需要重新绑定音视频管线，造成播放首帧变慢。<br>因此更推荐以下步骤：</p>
+<pre><code class="Swift">// 1. 初始化AVAsset
+let asset = AVURLAsset(url: url)
+
+// 2. 根据AVAsset初始化AVPlayerItem
+let playerItem = AVPlayerItem(asset: asset)
+
+// 3. 直接初始化AVPlayer
+let player = AVPlayer()
+
+// 4. 绑定AVPlayer至AVPlayerLayer，让系统提前准备好视频渲染管线
+let playerLayer = AVPlayerLayer(player: player) 
+
+// 5. 最后输入playerItem，开始视频播放
+player.replaceCurrentItemWithPlayerItem(playerItem)
+</code></pre>
+<p>可以看出两段代码只是简单地调整了播放器初始化的流程，却可以让系统在播放时节省初始化的时间。<br>为加快首帧播放，可以提前配置好 AVPlayer 和 AVPlayerItem, 但只是配置，不需要初始化相关依赖。提前将 AVPlayerLayer 连接到 AVPlayer 上，最后再通过<code>replaceCurrentItem(with: playerItem)</code>, 将 player 与 item 绑定起来，开始视频播放。</p>
+<h2 id="获取视频播放总时间，playerItem-duration-返回nan"><a href="#获取视频播放总时间，playerItem-duration-返回nan" class="headerlink" title="获取视频播放总时间，playerItem.duration 返回nan"></a>获取视频播放总时间，playerItem.duration 返回nan</h2><p><code>CMTimeGetSeconds(playerItem.duration)</code>有时返回nan, 导致算不出进度条总长度，这可能是 AVPlayerItem 的一个bug, 改为<code>CMTimeGetSeconds(playerItem.asset.duration)</code>后没有再出现过这个问题。<br>另外系统加载视频资源是异步的，可能创建一个 playeritem 后，立马去访问视频相关的属性如时长等，会是一个错误的值，要等到 playeritem.status == .readyToPlay 后再取。</p>
+<h2 id="播放错误处理"><a href="#播放错误处理" class="headerlink" title="播放错误处理"></a>播放错误处理</h2><p>通常是 URLSessionTask 下载过程出错，缓存框架本身有容错处理： 保存已下载数据，中断URLRequest, <code>urlTasks</code> remove 本次任务。反映到上层就是kvo playerItem.status 返回<code>AVPlayerItem.Status.failed</code>, 错误原因可以通过 <code>playerItem.error</code>查看。首先设置 retryCount, 超过重试次数提示用户加载错误： </p>
+<ul>
+<li>如果是常见错误码如网络问题<code>NSURLErrorNotConnectedToInternet</code>/<code>NSURLErrorCannotFindHost</code>, resetVideo, 调用 player.seekTo 会重启新的 loadingRequest, 从而重新创建 VideoDownloadTask. </li>
+<li>其他错误则 resrtPlayer, 直接重新初始化 player.</li>
+</ul>
+<h2 id="开始播放的时机"><a href="#开始播放的时机" class="headerlink" title="开始播放的时机"></a>开始播放的时机</h2><p>通常大家会在收到 playeritem.status == .readyToPlay 后立即播放，可能会导致开始播放时黑屏/花屏一下，原因是下载数据还不够，导致卡顿和解码异常，影响播放体验。控制播放/暂停逻辑最好结合<code>playbackBufferEmpty</code>和<code>playbackLikelyToKeepUp</code>这两个属性, 当监听到<code>playbackLikelyToKeepUp</code>, 表明现在 avplayer 可以无延迟播放，此时再play().</p>
+<h2 id="UITableView-视频列表"><a href="#UITableView-视频列表" class="headerlink" title="UITableView 视频列表"></a>UITableView 视频列表</h2><p>AVPlayer播放单个视频并没有太大的性能问题，但在 tableView 中滚动时，自动切换和播放视频容易造成滑动卡顿，使用时注意几个问题：</p>
+<ol>
+<li><strong>AVPlayer 渲染通道是有上限的。</strong> 之前 tableviewCell 没有复用时，发现超过18个视频后，后续的 avplayer 都无法播放了，<code>playeritem.error</code>返回<code>Code=-11839  Cannot Decode.</code> 这是由于 AVPlayer 通道创建过多，被 AVFoundation 限制解码。当调用代码<code>player = AVPlayer(playerItem: playerItem)</code>即创建了一条“渲染通道”，AVFoundation 对这样的 AVPayer 实例是有个数限制的，上限值不定，和iOS 硬件/系统相关。所以要尽可能减少 player 个数，cell重用是基本款。<a href="https://stackoverflow.com/questions/8608570/avplayeritem-fails-with-avstatusfailed-and-error-code-cannot-decode" target="_blank" rel="noopener">参考这个问题</a></li>
+<li>使用<code>player = AVPlayer(playerItem: playerItem)</code>新建一个 AVPayer, 或者使用<code>player.replaceCurrentItem(with: playerItem)</code>切换播放源都是比较耗时的操作，之前在每个<code>cellForRow..</code> 刷新数据时执行，滑动可见肉眼卡顿，经 Instruments 排查，<code>replaceCurrentItem(with: playerItem)</code> 会花费 30ms 左右, 从而造成 UI 线程阻塞。网上一些资料讲到 <strong>「该方法在切换视频时底层会调用信号量等待」</strong> 导致当前线程卡顿，因此尝试将该方法放到子线程执行，卡顿问题有缓解，但引出一些播放异常问题（下一条）。<br>重新思考下，列表滑动过程中是不需要播视频的，我们通常是滑动停止后，自动播放位于顶部或中间的视频，或者由用户点击触发。<strong>player 可以此时再切换视频源</strong>，滑动过程中<code>cellForRow..</code>只需展示视频封面等静态元素。缺点是每个视频首次加载时间略有延长，不过相比滑动时的卡顿，视频开始播放前的缓冲是容易接受的。</li>
+<li>将<code>replaceCurrentItem(with:)</code>放到子线程后，由于播放无法及时响应，较高频率会出现滑动结束后，待播放 playerItem 一直加载失败，或者视频有声音开始播，但画面一直是黑色的等现象。查看<a href="https://developer.apple.com/documentation/avfoundation/avplayer" target="_blank" rel="noopener">苹果文档</a>，注册和取消kvo的操作都应放到主线程，因为 AVFoundation 强制在主线程触发<code>observeValue(forKeyPath:of:change:context:)</code>,  因此 playerItem 的初始化、<code>replaceCurrentItem(with: playerItem)</code>, 以及kvo相关、<code>addPeriodicTimeObserver</code>都统一在主线程调用，避免出现状态不同步的情况。</li>
+</ol>
+</div><script type="text/javascript" src="/js/share.js?v=0.0.0" async></script><a class="article-share-link" data-url="https://zltunes.github.io/2019/04/23/avplayer-best-practice/" data-id="cjuuw27kn002q2frknld9bfit" data-qrcode="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACOUlEQVR42u3aS27DMAxFUe9/0y7QUYBG6n2iUtTU9SgIbEcnA4K/68LX/X29fn79ZnQ/v5O/uXTJkCHjsYx7eo1+bPTD82/Im8mzb6gyZMg4gMFD4c/7yUFHT5Hfnd8jQ4YMGaN7SBCshGYZMmTIqATctKIk4ZukoTJkyJCxlt7xJLJe1m6rxWXIkPFAxtpg4G8+f3y+IUOGjH/PuMOLJH/zoMzTvuBUMmTIaM2Yt9LSFYpKOcpT0mE4liFDRlMGH0lWmmi8ZcaHnW9CrQwZMpoy+MPzwnLveDIdOciQIeM0xq7Vh/qiRtrskyFDRldGZSjIB5916i9PyZAhozWDZ1b1dJAvW/ClNBkyZJzDWGxvhWtha8scQSkrQ4aM1ox6Clhv29XbeTJkyDiBwRO1NKFMj8gbbTJkyDiBsWvNixxlbcyAwroMGTJaM9LCkh83HV6mzbUAI0OGjIcz+CpqZTCQrlnEp5IhQ8ZhDF5S8mDNQzmnvtkZkSFDRlMGeawednlUTNc1Lh7LZciQ8VhGOoysMz6+SCFDhoymDB4E14pePgBYHC3IkCGjNYOXpvxwaWjeVh7LkCGjKeMOr7UUkwTotfA9XAuTIUNGI0YaLknSlrb11/AyZMg4jcFXtXg7rP5sqXcoQ4aMpoy9/XYeUitBH7XbZMiQcRhjrRzlixT8zxo23WTIkCGjUB+TOysrZTJkyDiBwUNe2oCLZ6rh3yFDhowTGGkBufYiHr75ckZpviFDhoxnML4AfOdqmM+CSj0AAAAASUVORK5CYII=">分享</a><div class="tags"><a href="/tags/iOS/">iOS</a><a href="/tags/AVFoundation/">AVFoundation</a></div><div class="post-nav"><a class="pre" href="/2019/04/24/dynamiccard/">DynamicCard - 基于 FlexBoxLayout 的动态排版渲染引擎</a><a class="next" href="/2019/04/22/ios-network-diagnosis/">全面的 iOS 客户端网络诊断方案</a></div><div id="lv-container" data-id="city" data-uid="MTAyMC8zNjkyMi8xMzQ1OA=="><script>(function(d, s) {
+   var j, e = d.getElementsByTagName(s)[0];
+   if (typeof LivereTower === 'function') { return; }
+   j = d.createElement(s);
+   j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+   j.async = true;
+   e.parentNode.insertBefore(j, e);
+})(document, 'script');
+</script></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="https://zltunes.github.io"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/web/">web</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/notification/" style="font-size: 15px;">通知</a> <a href="/tags/HTTPS/" style="font-size: 15px;">HTTPS</a> <a href="/tags/iOS/" style="font-size: 15px;">iOS</a> <a href="/tags/iPhone/" style="font-size: 15px;">iPhone</a> <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/swichphone/" style="font-size: 15px;">换机</a> <a href="/tags/dynamic/" style="font-size: 15px;">动态化</a> <a href="/tags/Messages/" style="font-size: 15px;">Messages</a> <a href="/tags/区块链/" style="font-size: 15px;">区块链</a> <a href="/tags/JSPatch/" style="font-size: 15px;">JSPatch</a> <a href="/tags/sourcecode/" style="font-size: 15px;">源码</a> <a href="/tags/rails/" style="font-size: 15px;">rails</a> <a href="/tags/web/" style="font-size: 15px;">web</a> <a href="/tags/ReactiveCocoa/" style="font-size: 15px;">ReactiveCocoa</a> <a href="/tags/ROS/" style="font-size: 15px;">ROS</a> <a href="/tags/robot/" style="font-size: 15px;">机器人</a> <a href="/tags/AVFoundation/" style="font-size: 15px;">AVFoundation</a></div></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">zltunes.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.css"><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

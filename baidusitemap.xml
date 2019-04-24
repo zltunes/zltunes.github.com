@@ -5,11 +5,11 @@
     
   <url>
     <loc>https://zltunes.github.io/2019/04/24/dynamiccard/</loc>
-    <lastmod>2019-04-24T06:41:52.119Z</lastmod>
+    <lastmod>2019-04-23T16:00:00.000Z</lastmod>
     <data>
         <display>
         <title>DynamicCard - 基于 FlexBoxLayout 的动态排版渲染引擎</title>
-        <pubTime>2019-04-24T05:06:14.000Z</pubTime>
+        <pubTime>2019-04-23T16:00:00.000Z</pubTime>
         
         <tag>iOS</tag>
          
@@ -24,304 +24,12 @@
 
     
   <url>
-    <loc>https://zltunes.github.io/2019/04/24/reactivecocoa-tutorial/</loc>
-    <lastmod>2019-04-24T06:33:26.631Z</lastmod>
-    <data>
-        <display>
-        <title>ReactiveCocoa 入门与登录实战</title>
-        <pubTime>2019-04-24T05:17:34.000Z</pubTime>
-        
-        <tag>iOS</tag>
-         
-        <tag>ReactiveCocoa</tag>
-         
-         
-           
-             
-              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2019/04/24/rails-tutorial/</loc>
-    <lastmod>2019-04-24T06:30:13.520Z</lastmod>
-    <data>
-        <display>
-        <title>Ruby on Rails 初探</title>
-        <pubTime>2019-04-24T05:14:02.000Z</pubTime>
-        
-        <tag>rails</tag>
-         
-        <tag>web</tag>
-         
-         
-           
-             
-              <breadCrumb title="web" url="https://zltunes.github.io/categories/web/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2019/04/24/jspatch-swift/</loc>
-    <lastmod>2019-04-24T06:29:10.591Z</lastmod>
-    <data>
-        <display>
-        <title>iOS 热更新解读（三）—— JSPatch 之于 Swift</title>
-        <pubTime>2019-04-24T05:19:46.000Z</pubTime>
-        
-        <tag>iOS</tag>
-         
-        <tag>动态化</tag>
-         
-        <tag>JSPatch</tag>
-         
-        <tag>源码</tag>
-         
-         
-           
-             
-              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2019/04/24/jspatch-sourcecode/</loc>
-    <lastmod>2019-04-24T06:28:34.983Z</lastmod>
-    <data>
-        <display>
-        <title>iOS 热更新解读（二）—— JSPatch 源码解析</title>
-        <pubTime>2019-04-24T05:23:13.000Z</pubTime>
-        
-        <tag>iOS</tag>
-         
-        <tag>动态化</tag>
-         
-        <tag>JSPatch</tag>
-         
-        <tag>源码</tag>
-         
-         
-           
-             
-              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2019/04/24/jspatch-apatch&javascriptcore/</loc>
-    <lastmod>2019-04-24T06:27:08.021Z</lastmod>
-    <data>
-        <display>
-        <title>iOS 热更新解读（一）APatch & JavaScriptCore</title>
-        <pubTime>2019-04-24T05:24:15.000Z</pubTime>
-        
-        <tag>iOS</tag>
-         
-        <tag>动态化</tag>
-         
-        <tag>JSPatch</tag>
-         
-        <tag>源码</tag>
-         
-         
-           
-             
-              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2019/04/24/dynamic-height-cell/</loc>
-    <lastmod>2019-04-24T06:22:07.532Z</lastmod>
-    <data>
-        <display>
-        <title>TableView 动态 cell 高度自适应方案</title>
-        <pubTime>2019-04-24T05:31:06.000Z</pubTime>
-        
-        <tag>iOS</tag>
-         
-         
-           
-             
-              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2019/04/24/iosapp-certificate-signature/</loc>
-    <lastmod>2019-04-24T05:35:44.000Z</lastmod>
-    <data>
-        <display>
-        <title>iOS 程序证书及签名机制</title>
-        <pubTime>2019-04-24T05:35:44.000Z</pubTime>
-        
-        <tag>iOS</tag>
-         
-         
-           
-             
-              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2019/04/24/light-viewcontrollers/</loc>
-    <lastmod>2019-04-24T05:31:46.000Z</lastmod>
-    <data>
-        <display>
-        <title>为 ViewControllers 瘦身</title>
-        <pubTime>2019-04-24T05:31:46.000Z</pubTime>
-        
-        <tag>iOS</tag>
-         
-         
-           
-             
-              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2019/04/24/robot-operating-system-intro/</loc>
-    <lastmod>2019-04-24T05:29:42.000Z</lastmod>
-    <data>
-        <display>
-        <title>机器人操作系统（ROS/Android）对比</title>
-        <pubTime>2019-04-24T05:29:42.000Z</pubTime>
-        
-        <tag>Android</tag>
-         
-        <tag>ROS</tag>
-         
-        <tag>机器人</tag>
-         
-         
-           
-             
-              <breadCrumb title="Android" url="https://zltunes.github.io/categories/Android/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2019/04/24/ios-network-diagnosis/</loc>
-    <lastmod>2019-04-24T05:07:30.000Z</lastmod>
-    <data>
-        <display>
-        <title>全面的 iOS 客户端网络诊断方案</title>
-        <pubTime>2019-04-24T05:07:30.000Z</pubTime>
-        
-        <tag>iOS</tag>
-         
-         
-           
-             
-              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2019/04/24/uitextview-max-length/</loc>
-    <lastmod>2019-04-24T04:49:21.000Z</lastmod>
-    <data>
-        <display>
-        <title>UITextView 输入字数限制</title>
-        <pubTime>2019-04-24T04:49:21.000Z</pubTime>
-        
-        <tag>iOS</tag>
-         
-         
-           
-             
-              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2019/04/24/cross-platform-app/</loc>
-    <lastmod>2019-04-24T04:47:38.000Z</lastmod>
-    <data>
-        <display>
-        <title>客户端跨平台开发技术对比</title>
-        <pubTime>2019-04-24T04:47:38.000Z</pubTime>
-        
-        <tag>iOS</tag>
-         
-        <tag>Android</tag>
-         
-        <tag>动态化</tag>
-         
-         
-           
-             
-              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2019/04/24/app-statistics-report/</loc>
-    <lastmod>2019-04-24T03:34:22.000Z</lastmod>
-    <data>
-        <display>
-        <title>客户端数据埋点方案优化</title>
-        <pubTime>2019-04-24T03:34:22.000Z</pubTime>
-        
-        <tag>iOS</tag>
-         
-        <tag>Android</tag>
-         
-         
-           
-             
-              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2019/04/24/avplayer-best-practice/</loc>
-    <lastmod>2019-04-23T16:38:31.000Z</lastmod>
+    <loc>https://zltunes.github.io/2019/04/23/avplayer-best-practice/</loc>
+    <lastmod>2019-04-22T16:00:00.000Z</lastmod>
     <data>
         <display>
         <title>AVPlayer 边下边播与最佳实践</title>
-        <pubTime>2019-04-23T16:38:31.000Z</pubTime>
+        <pubTime>2019-04-22T16:00:00.000Z</pubTime>
         
         <tag>iOS</tag>
          
@@ -338,12 +46,98 @@
 
     
   <url>
-    <loc>https://zltunes.github.io/2019/03/10/about-https/</loc>
-    <lastmod>2019-03-10T06:44:16.000Z</lastmod>
+    <loc>https://zltunes.github.io/2019/04/22/ios-network-diagnosis/</loc>
+    <lastmod>2019-04-21T16:00:00.000Z</lastmod>
+    <data>
+        <display>
+        <title>全面的 iOS 客户端网络诊断方案</title>
+        <pubTime>2019-04-21T16:00:00.000Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2019/04/21/app-statistics-report/</loc>
+    <lastmod>2019-04-20T16:00:00.000Z</lastmod>
+    <data>
+        <display>
+        <title>客户端数据埋点方案优化</title>
+        <pubTime>2019-04-20T16:00:00.000Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+        <tag>Android</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2019/04/20/cross-platform-app/</loc>
+    <lastmod>2019-04-19T16:00:00.000Z</lastmod>
+    <data>
+        <display>
+        <title>客户端跨平台开发技术对比</title>
+        <pubTime>2019-04-19T16:00:00.000Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+        <tag>Android</tag>
+         
+        <tag>动态化</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2019/04/19/blockchain/</loc>
+    <lastmod>2019-04-18T16:00:00.000Z</lastmod>
+    <data>
+        <display>
+        <title>区块链和比特币原理、以太坊开发</title>
+        <pubTime>2019-04-18T16:00:00.000Z</pubTime>
+        
+        <tag>区块链</tag>
+         
+         
+           
+             
+              <breadCrumb title="web" url="https://zltunes.github.io/categories/web/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2019/04/18/about-https/</loc>
+    <lastmod>2019-04-17T16:00:00.000Z</lastmod>
     <data>
         <display>
         <title>HTTPS 协议和原理</title>
-        <pubTime>2019-03-10T06:44:16.000Z</pubTime>
+        <pubTime>2019-04-17T16:00:00.000Z</pubTime>
         
         <tag>HTTPS</tag>
          
@@ -358,8 +152,190 @@
 
     
   <url>
+    <loc>https://zltunes.github.io/2019/04/17/jspatch-apatch&javascriptcore/</loc>
+    <lastmod>2019-04-16T16:00:00.000Z</lastmod>
+    <data>
+        <display>
+        <title>iOS 热更新解读（一）APatch & JavaScriptCore</title>
+        <pubTime>2019-04-16T16:00:00.000Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+        <tag>动态化</tag>
+         
+        <tag>JSPatch</tag>
+         
+        <tag>源码</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2019/04/16/jspatch-sourcecode/</loc>
+    <lastmod>2019-04-15T16:00:00.000Z</lastmod>
+    <data>
+        <display>
+        <title>iOS 热更新解读（二）—— JSPatch 源码解析</title>
+        <pubTime>2019-04-15T16:00:00.000Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+        <tag>动态化</tag>
+         
+        <tag>JSPatch</tag>
+         
+        <tag>源码</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2019/04/15/jspatch-swift/</loc>
+    <lastmod>2019-04-14T16:00:00.000Z</lastmod>
+    <data>
+        <display>
+        <title>iOS 热更新解读（三）—— JSPatch 之于 Swift</title>
+        <pubTime>2019-04-14T16:00:00.000Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+        <tag>动态化</tag>
+         
+        <tag>JSPatch</tag>
+         
+        <tag>源码</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2019/04/14/uitextview-max-length/</loc>
+    <lastmod>2019-04-13T16:00:00.000Z</lastmod>
+    <data>
+        <display>
+        <title>UITextView 输入字数限制</title>
+        <pubTime>2019-04-13T16:00:00.000Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2019/04/13/reactivecocoa-tutorial/</loc>
+    <lastmod>2019-04-12T16:00:00.000Z</lastmod>
+    <data>
+        <display>
+        <title>ReactiveCocoa 入门与登录实战</title>
+        <pubTime>2019-04-12T16:00:00.000Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+        <tag>ReactiveCocoa</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2019/04/12/dynamic-height-cell/</loc>
+    <lastmod>2019-04-11T16:00:00.000Z</lastmod>
+    <data>
+        <display>
+        <title>TableView 动态 cell 高度自适应方案</title>
+        <pubTime>2019-04-11T16:00:00.000Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2019/04/11/rails-tutorial/</loc>
+    <lastmod>2019-04-10T16:00:00.000Z</lastmod>
+    <data>
+        <display>
+        <title>Ruby on Rails 初探</title>
+        <pubTime>2019-04-10T16:00:00.000Z</pubTime>
+        
+        <tag>rails</tag>
+         
+        <tag>web</tag>
+         
+         
+           
+             
+              <breadCrumb title="web" url="https://zltunes.github.io/categories/web/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2019/04/10/light-viewcontrollers/</loc>
+    <lastmod>2019-04-09T16:00:00.000Z</lastmod>
+    <data>
+        <display>
+        <title>为 ViewControllers 瘦身</title>
+        <pubTime>2019-04-09T16:00:00.000Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://zltunes.github.io/2019/03/08/ios-android-transfer/</loc>
-    <lastmod>2019-03-08T08:56:40.000Z</lastmod>
+    <lastmod>2019-04-08T16:00:00.000Z</lastmod>
     <data>
         <display>
         <title>iPhone & Android 换机通信方案分析</title>
@@ -384,29 +360,30 @@
 
     
   <url>
-    <loc>https://zltunes.github.io/2019/03/06/blockchain/</loc>
-    <lastmod>2019-03-06T02:47:33.000Z</lastmod>
+    <loc>https://zltunes.github.io/2018/10/16/ios10-messages-framework/</loc>
+    <lastmod>2019-04-07T16:00:00.000Z</lastmod>
     <data>
         <display>
-        <title>区块链和比特币原理、以太坊开发</title>
-        <pubTime>2019-03-06T02:47:33.000Z</pubTime>
+        <title>iOS 10 之 Messages framework</title>
+        <pubTime>2018-10-16T09:10:57.000Z</pubTime>
         
-        <tag>区块链</tag>
+        <tag>iOS</tag>
+         
+        <tag>Messages</tag>
          
          
            
              
-              <breadCrumb title="web" url="https://zltunes.github.io/categories/web/"/>
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
           
         </display>
     </data>
     </url>
 
     
-    
   <url>
     <loc>https://zltunes.github.io/2018/10/16/ios10-notification/</loc>
-    <lastmod>2018-10-16T09:10:59.000Z</lastmod>
+    <lastmod>2019-04-06T16:00:00.000Z</lastmod>
     <data>
         <display>
         <title>iOS 10 通知更新详解</title>
@@ -427,16 +404,14 @@
 
     
   <url>
-    <loc>https://zltunes.github.io/2018/10/16/ios10-messages-framework/</loc>
-    <lastmod>2018-10-16T09:10:57.000Z</lastmod>
+    <loc>https://zltunes.github.io/2019/04/06/iosapp-certificate-signature/</loc>
+    <lastmod>2019-04-05T16:00:00.000Z</lastmod>
     <data>
         <display>
-        <title>iOS 10 之 Messages framework</title>
-        <pubTime>2018-10-16T09:10:57.000Z</pubTime>
+        <title>iOS 程序证书及签名机制</title>
+        <pubTime>2019-04-05T16:00:00.000Z</pubTime>
         
         <tag>iOS</tag>
-         
-        <tag>Messages</tag>
          
          
            
@@ -447,5 +422,30 @@
     </data>
     </url>
 
+    
+  <url>
+    <loc>https://zltunes.github.io/2019/04/05/robot-operating-system-intro/</loc>
+    <lastmod>2019-04-04T16:00:00.000Z</lastmod>
+    <data>
+        <display>
+        <title>机器人操作系统（ROS/Android）对比</title>
+        <pubTime>2019-04-04T16:00:00.000Z</pubTime>
+        
+        <tag>Android</tag>
+         
+        <tag>ROS</tag>
+         
+        <tag>机器人</tag>
+         
+         
+           
+             
+              <breadCrumb title="Android" url="https://zltunes.github.io/categories/Android/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
     
 </urlset>

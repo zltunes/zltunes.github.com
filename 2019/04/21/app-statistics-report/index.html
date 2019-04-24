@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>客户端数据埋点方案优化 | zltunes</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/8.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-dark.min.css"><link rel="stylesheet" type="text/css" href="/css/code-number.css?v=0.0.0"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script><script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><script type="text/javascript" src="/js/code-number.js?v=0.0.0"></script></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">客户端数据埋点方案优化</h1><a id="logo" href="/.">zltunes</a><p class="description">赵磊的博客</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/work/"><i class="fa fa-building"> 项目</i></a><a href="/resume/resume.pdf"><i class="fa fa-file"> 简历</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">客户端数据埋点方案优化</h1><div class="post-meta">Apr 21, 2019<span> | </span><span class="category"><a href="/categories/iOS/">iOS</a></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#背景"><span class="toc-number">1.</span> <span class="toc-text">背景</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#解决方案"><span class="toc-number">2.</span> <span class="toc-text">解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#细化日志等级，灵活触发条件"><span class="toc-number">2.1.</span> <span class="toc-text">细化日志等级，灵活触发条件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#提高上报准确性"><span class="toc-number">2.2.</span> <span class="toc-text">提高上报准确性</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#系统实现"><span class="toc-number">3.</span> <span class="toc-text">系统实现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#唯一ID"><span class="toc-number">3.1.</span> <span class="toc-text">唯一ID</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#整体架构"><span class="toc-number">3.2.</span> <span class="toc-text">整体架构</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#埋点方案的讨论（iOS平台）"><span class="toc-number">4.</span> <span class="toc-text">埋点方案的讨论（iOS平台）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#无痕埋点上报"><span class="toc-number">4.1.</span> <span class="toc-text">无痕埋点上报</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#方法1：MethodSwizzle"><span class="toc-number">4.1.1.</span> <span class="toc-text">方法1：MethodSwizzle</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#方法2：基类继承"><span class="toc-number">4.1.2.</span> <span class="toc-text">方法2：基类继承</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#选择"><span class="toc-number">4.2.</span> <span class="toc-text">选择</span></a></li></ol></li></ol></div></div><div class="post-content"><p>“埋点”就是在应用中增加监控点，由客户端记录上报给服务端。作为大部分 APP 必不可少的功能模块，可以帮助我们获取用户行为数据（时间、操作）、应用质量数据（加载情况、错误异常）、产品运营数据（PV/UV、转化率/留存率）等，甚至在一些场景中和收入计算直接挂钩。本文记录一下对某大型 APP 埋点上报方案的改进过程。<br><a id="more"></a></p>
+<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>之前的上报系统把所有日志归为两类：</p>
+<ol>
+<li>实时上报：产生一条日志即触发一次请求，用于一些对时效性、准确性要求高的场景，如APP的下载、安装完成日志。</li>
+<li>非实时上报：日志产生时先存入db, 上报触发条件有<ul>
+<li>终端日志累计超过1000条</li>
+<li>APP 连续运行超过3小时</li>
+<li>APP 重新启动</li>
+</ul>
+</li>
+</ol>
+<p>在 APP 规模较小时可以满足业务需求，随着页面越来越复杂，功能模块越来越多，出现以下问题：</p>
+<ol>
+<li>实时上报请求太频繁，比如切换到某tab, 或者 listview 滑动一下即有10+条请求发送，导致客户端网络交互太多。</li>
+<li>非实时上报导致数据延后，使统计报表产生误差，分析用户行为的时候不够准确，终端的页面曝光日志不够及时，导致活跃数据与后台统计出来的相差很大。</li>
+</ol>
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><h2 id="细化日志等级，灵活触发条件"><a href="#细化日志等级，灵活触发条件" class="headerlink" title="细化日志等级，灵活触发条件"></a>细化日志等级，灵活触发条件</h2><p>针对“实时太频繁，非实时延迟大”的问题，由于目前只有实时和非实时2个等级，划分粒度太粗。我们引入更多的日志上报级别，<strong>日志的级别主要用来区分日志的重要性</strong>。越重要的日志，上报的实时性越强，触发上报的条件越宽松；越不重要的日志，上报的实时性越弱，触发上报的条件越严格。打个比方，如果实时上报是1，非实时上报是0，我们可以在 0 和 1 之间引入0.1，0.2，0.3等等。<br>日志上报的触发条件分为2个维度控制：<strong>日志积累时间</strong>，<strong>日志积累条数</strong>。只要满足两个条件之一，就算满足了触发条件。例如：<br><img src="/pic/app-statistics-report-1.jpg" alt=""><br>这里将上报日志划分成5个级别。<br>级别1是实时上报，无需条件触发。级别2在 WiFi 网络下当日志积累条数超过10条，或者日志积累时间超过600s就会上报，<strong>为避免网络状况不好时导致延时过大，流量环境下的上报触发条件相对宽松。</strong> 级别3表示上报条件比2更严格些。101级别表示此级别的日志永远不会上报到后台。102级别表示延迟上报，和旧有的非实时上报含义相同。<br>每条日志的等级由日志类型来决定，<strong>每一个日志类型都会被映射到一个唯一的日志级别。</strong> 二者的映射关系保存在后台。此外，每个日志级别对应的触发条件也交由后台配置。最终客户端只需知道各个业务点的日志类型即可，日志 level 可以是数量不定的，所有的日志都根据后台配置来决定上报时机，甚至不再上报。<br><img src="/pic/app-statistics-report-4.jpg" alt=""></p>
+<h2 id="提高上报准确性"><a href="#提高上报准确性" class="headerlink" title="提高上报准确性"></a>提高上报准确性</h2><p>上报系统要尽量避免出现漏报、多报的情况。<br>级别2和3理论上可能导致数据的延迟和丢失。比如积累到一定量，但是没有到触发条件时候，客户端异常退出，会导致数据的丢失。为了保证客户端异常情况下日志不丢失，<strong>对优先级较高的日志在生成的时候就异步存入DB，上报成功后再删除掉</strong>。实时上报失败的日志存入 DB 转为延迟上报等待触发。<br>针对延迟上报的日志，客户端启动/触发间隔为m时间的定时任务，每次上报n条db里的数据。其中m、n后台可配置。<strong>但这一步要考虑与级别2/3同时触发的情况，避免同一数据重复上报。</strong></p>
+<h1 id="系统实现"><a href="#系统实现" class="headerlink" title="系统实现"></a>系统实现</h1><h2 id="唯一ID"><a href="#唯一ID" class="headerlink" title="唯一ID"></a>唯一ID</h2><p>行为日志如何唯一标示一个view？有很多方案，比如<a href="https://neyoufan.github.io/2017/04/19/ios/%E7%BD%91%E6%98%93HubbleData%E6%97%A0%E5%9F%8B%E7%82%B9SDK%E5%9C%A8iOS%E7%AB%AF%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0/" target="_blank" rel="noopener">网易HubbleData</a><strong>使用每个view的 viewPath 作为唯一id</strong>：获取每个控件自身的ID、类名、Resource Id以及位于所属父组件的Index等特征信息，并逐级向上遍历找到根节点。iOS 的话可以使用<code>ViewController_UIControlClassName_action_target_UIControlProperty</code>来确定唯一key.<br>也可以简单一点像下面，为每个页面设置唯一的场景值 <code>sceneID</code>, 然后页面内划分不同模块<code>moduleID</code>, 接着划分更小一级为槽位<code>slotID</code>,  当点击某槽位进入二级页面，这里的 <code>sceneID-moduleID-slotID</code>就作为下一级页面内上报日志的<code>sourceScene-souceModule-sourceSlot</code>, 从而可以追溯日志源头，统计点击率等信息。<br><img src="/pic/app-statistics-report-3.jpg" alt=""><br>除了唯一ID外，上报信息经常需要包括一些业务数据如APP相关信息（应用市场）、视频信息（视频类APP）等。</p>
+<h2 id="整体架构"><a href="#整体架构" class="headerlink" title="整体架构"></a>整体架构</h2><p><img src="https://pic.superbed.cn/item/5cad7ba23a213b0417f8dd19" alt=""></p>
+<ol>
+<li>日志系统对外提供统一的上报接口</li>
+</ol>
+<pre><code class="Java">    /**
+     * 需要传入日志类型和结构，不同类型日志有不同的优先级
+     * @param logType 仅仅支持 LogTypeEnum 枚举的值，其他的值全部不做任何处理
+     * @param logStruct 上报结构，所有类型日志统一继承自 LogStruct, 这里传具体子类进去
+     */
+    public static void report(final byte logType, final LogStruct logStruct){
+        //TODO
+    }
+</code></pre>
+<ol start="2">
+<li>日志分发器是整个上报系统的中枢，它是一个单例对象，持有一个日志处理器队列，可以根据日志优先级创建或调度不同的处理器，并在这些处理器创建时提供与<code>LogTriggerItem</code>相应的定时器。为节省性能，所有的日志处理都使用一个单独的工作线程统一处理。<br>分发器需要监听系统前后台切换事件，从前台切换到后台需要上报所有处理器中的缓存日志。重新进入前台需要重置定时器。</li>
+<li>每个 Processor 的主要结构有：<ul>
+<li>readySendToNetQueue: 缓存待发送日志</li>
+<li>readyWriteToDBQueue: 缓存待存入 DB 中的数据</li>
+<li>reportTriggerItem: 上报触发条件</li>
+<li>reportAlarm: 定时器，定期检查 trigger 条件是否满足</li>
+<li>writeToDBHandler:启用一个 handler 专门用于写DB</li>
+</ul>
+</li>
+<li>Processor 工作流程如下：<br><img src="https://pic.superbed.cn/item/5cadb48f3a213b0417fb9167" alt=""></li>
+</ol>
+<h1 id="埋点方案的讨论（iOS平台）"><a href="#埋点方案的讨论（iOS平台）" class="headerlink" title="埋点方案的讨论（iOS平台）"></a>埋点方案的讨论（iOS平台）</h1><p>上面讲的APP使用的还是传统「代码埋点」的方式，客户端接入该上报sdk, 然后在业务各处调用Api. 优点是灵活度高，精确对齐产品所需数据，避免太多的无用上报。缺点也很明显，数据上报和业务强相关，上报数据有误，就需要发版本修复。另外上报代码遍地开花，影响代码整洁。现在业界普遍都在朝“无痕埋点上报”的方向改进。</p>
+<h2 id="无痕埋点上报"><a href="#无痕埋点上报" class="headerlink" title="无痕埋点上报"></a>无痕埋点上报</h2><p>其实就是自动上报，达到了触发条件就会上报，和业务解耦，无需在业务的各处调用API，也不用针对每个版本的新需求专门做数据上报。缺点也有，无效上报过多，上报数据量大，业界做法各种各样，介绍通用的两种：</p>
+<ol>
+<li>hook 系统的UIKit，在所有的UI控件响应点击事件的时候自动采集数据。</li>
+<li>在项目中抽象出UI控件的基类，重写 click 函数，插桩数据上报的代码。</li>
+</ol>
+<h3 id="方法1：MethodSwizzle"><a href="#方法1：MethodSwizzle" class="headerlink" title="方法1：MethodSwizzle"></a>方法1：MethodSwizzle</h3><p>由于业务场景的统计需要大部分为点击和曝光，综合起来需要对以下UI控件进行Method Swizzling. 包括<code>UIButton</code>, <code>UIGestureRecognizer</code>, <code>UISwitch</code>, 自定义的<code>UIControl</code>, 列表点击<code>UITableView</code>, <code>UICollectionView</code>, 各类弹框<code>UIAlertView</code>. 对每一个需要hook的系统控件都增加一个category, 然后重写<code>+ (void)load</code>函数。hook的处理方法和时机多种。以 UIButton 为例，我们需要hook的方法是：</p>
+<pre><code class="Objective-C">- (void)sendAction:(SEL)action to:(nullable id)target forEvent:(nullable UIEvent *)event;
+</code></pre>
+<p>新增一个方法</p>
+<pre><code class="Objective-C">- (void)stSendActionWithAutoTrace:(SEL)action to:(id)target forEvent:(UIEvent *)event
+</code></pre>
+<p>然后swizzle. <code>stSendActionWithAutoTrace</code>需要调用原来的业务实现，然后再加上数据上报的插桩代码。<br><code>UIGestureRecognizer</code>比较特殊，我们无法得知其响应函数，因为手势的触发依赖于系统的响应链，系统暴露给我们的接口是初始化函数<code>initWithTarget:action:</code>, 我们选择hook该函数，但需要考虑这么做带来的影响，比如系统私有view addGesture 在初始化<code>UIGestureRecognizer</code>对象的时候，像文本输入框的粘贴复制菜单，WebView/ScrollView 的点击事件, 弹框 AlertView 的点击等无用上报都需要过滤。<br>虽然我们hook的是手势初始化函数，但真正需要swizzle的是其手势回调，因此在动态运行时增加一个 swizzle 函数，其函数名规格为<code>targetclass+selector</code>, 这样将所有的手势回调函数收归到一起。需要注意一点：<strong>运行时增加swizzle函数时需要判断手势回调的参数个数</strong>, 因为项目中多人开发可能存在不同写法：<code>-（void)didTapOnView:(UIGestureRecognizer gesture)</code> 或者无参数<code>-（void） didTapOnView</code> 等。<br>此外还要考虑继承问题，如果子类继承并重写了父类的<code>didTapOnView</code>方法，并在实现中先调用了<code>[super didTapOnView]</code>, 那么在运行时添加的swizzle函数实现中将会收到两次消息导致多次上报，需要特殊处理。</p>
+<h3 id="方法2：基类继承"><a href="#方法2：基类继承" class="headerlink" title="方法2：基类继承"></a>方法2：基类继承</h3><p>method swizzling的方法，比较底层，对系统调用伤筋动骨，对 UIKit 依赖比较强，系统如果有更改又需要同步跟进。另外 method swizzling 这种黑魔法使用不多，不熟悉的东西自然埋坑多。相比之下基类继承的方法是更容易应用的。<br>对<code>UIButton</code>等UI控件抽象<code>BaseButton</code>, 重写</p>
+<pre><code class="Objective-C">- (void)sendAction:(SEL)action to:(id)target forEvent:(UIEvent *)event
+</code></pre>
+<p>在里面加入上报插桩代码，项目中的 UIButton 需要统一继承 BaseButton, 则所有 button 都实现了自动上报，其他控件类似。安卓更简单些，定义<code>OnNewClickListener</code>继承<code>View.OnClickListener</code>, 之后<code>view.setOnClickListener</code>都传<code>OnNewClickListener</code>类型，实现<code>onNewClick()</code>方法即可。 </p>
+<pre><code class="Java">public abstract class OnNewClickListener implements View.OnClickListener {
+
+    @Override
+    public void onClick(View v) {
+        onNewClick(v);
+
+        STCommonInfoGC stCommonInfoGC = getStInfo();
+        if (null != stCommonInfoGC) {
+            //重新创建用于点击上报的日志
+            stCommonInfoGC = STInfoBuilder.buildClickSTInfo(stCommonInfoGC);
+            STLog.reportLog(stCommonInfoGC);
+        }
+    }
+
+
+    public abstract void onNewClick(View v);
+
+    public STInfoClick getStInfo() {
+        return null;
+    }
+}
+</code></pre>
+<p>同理，将系统基类<code>UITapGestureRecognizer</code>封装成<code>BaseTapGestureRecognizer</code>, 重写<code>initWithTarget:action:</code>函数，回调函数中先调用业务的手势回调实现，再调用数据上报接口。<br>不过这种方式也有些问题，比如第三方库的控件无法替换类型；新增控件可以直接继承<code>BaseButton</code>, 如果追求全局统一，对项目中旧有控件进行修改类型的工作，成本会比较大。</p>
+<h2 id="选择"><a href="#选择" class="headerlink" title="选择"></a>选择</h2><p>采用哪种方案还是要结合项目和产品需求，考虑到：</p>
+<ol>
+<li>项目规模已经比较大，修改已有控件类型不合理。</li>
+<li>产品对view的唯一id有自己的定义和统计方法，并且和业务强相关，如同样是点击action, 普通按钮和“开始下载”“更新”按钮的点击分属不同的日志类型（等级）；另外app卡片的相关日志都需要带上 appModel 信息。</li>
+</ol>
+<p>因此我们的项目最终采用了<strong>代码埋点 + 轻度无痕埋点</strong> 的方案，之所以是轻度，一是只有新增控件采用新基类，二是开放日志生成接口，供各个业务方自定义。</p>
+</div><script type="text/javascript" src="/js/share.js?v=0.0.0" async></script><a class="article-share-link" data-url="https://zltunes.github.io/2019/04/21/app-statistics-report/" data-id="cjuuw27gd00122frkeb73aacf" data-qrcode="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAAAAACs8KCBAAACL0lEQVR42u3aS27DMAxF0ex/0ylQdFCgtXIfqQY1dTUyEPlzNGBIUY8HHs/P8fN6Pef74E9ez28NGTJk3JbxXI71p1+9fk26+tyr55B7ZciQcQIjDYVrJAmj/L3rOTJkyJCRXtd+5XNkyJAhgxel/HP7T5MhQ4YMXsTuDZHpomyrxWXIkHFDRqcx8NfXb+pvyJAh4x8znuHg2/f8XZ3v+XqCDBkyRjPItn7tNWlxmy7Zg+eeMmTIuDkjLT5JAckLTlISo4WWIUPGaAYpWWuHMNL2QPp2GTJknMbYmwimhyo4+MWfhAwZMkYz0qhcS+DS0jTlyZAhYyojDZe80ZgWsa0kUoYMGQcwaqGTH+SqnZfg82XIkHEOo9+YTItYnpK+aG3KkCHjAAZvChJAJwXk98qQIeMcBikR0wNb5Dnp8Y6ghSlDhoxxjDTg8jSOH8VIl2PD/4YMGTJuzqiVte9JJS/vlSFDxgEM3qQkYXFX+A7AMmTIGM0ghWJn659vpfFU8nKZZMiQMZRRO2zRaWRyHg/ZMmTIOIHR31xLmwF8+VABLEOGjNEMPinerMdHu7a1JWTIkDGUsbcNwLfyO0nkL3gZMmSMZvBBAiUPvmkQJyFbhgwZsxnp1n9/o403FYp7hzJkyBjKqCV5nU20dLx4sgwZMmSUNtpqaV8asmXIkCEjLSY7lXS6HK2AK0OGjBsyeMjrJIW8hZke75AhQ8ZsRqcxkBacJFinM2XIkDGa8QHPiah2Y8xMgQAAAABJRU5ErkJggg==">分享</a><div class="tags"><a href="/tags/iOS/">iOS</a><a href="/tags/Android/">Android</a></div><div class="post-nav"><a class="pre" href="/2019/04/22/ios-network-diagnosis/">全面的 iOS 客户端网络诊断方案</a><a class="next" href="/2019/04/20/cross-platform-app/">客户端跨平台开发技术对比</a></div><div id="lv-container" data-id="city" data-uid="MTAyMC8zNjkyMi8xMzQ1OA=="><script>(function(d, s) {
+   var j, e = d.getElementsByTagName(s)[0];
+   if (typeof LivereTower === 'function') { return; }
+   j = d.createElement(s);
+   j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+   j.async = true;
+   e.parentNode.insertBefore(j, e);
+})(document, 'script');
+</script></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="https://zltunes.github.io"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/web/">web</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/notification/" style="font-size: 15px;">通知</a> <a href="/tags/HTTPS/" style="font-size: 15px;">HTTPS</a> <a href="/tags/iOS/" style="font-size: 15px;">iOS</a> <a href="/tags/iPhone/" style="font-size: 15px;">iPhone</a> <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/swichphone/" style="font-size: 15px;">换机</a> <a href="/tags/dynamic/" style="font-size: 15px;">动态化</a> <a href="/tags/Messages/" style="font-size: 15px;">Messages</a> <a href="/tags/区块链/" style="font-size: 15px;">区块链</a> <a href="/tags/JSPatch/" style="font-size: 15px;">JSPatch</a> <a href="/tags/sourcecode/" style="font-size: 15px;">源码</a> <a href="/tags/rails/" style="font-size: 15px;">rails</a> <a href="/tags/web/" style="font-size: 15px;">web</a> <a href="/tags/ReactiveCocoa/" style="font-size: 15px;">ReactiveCocoa</a> <a href="/tags/ROS/" style="font-size: 15px;">ROS</a> <a href="/tags/robot/" style="font-size: 15px;">机器人</a> <a href="/tags/AVFoundation/" style="font-size: 15px;">AVFoundation</a></div></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">zltunes.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.css"><script type="text/x-mathjax-config">MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+  });
+</script><script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
