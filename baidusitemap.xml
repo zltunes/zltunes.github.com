@@ -4,32 +4,8 @@
 
     
   <url>
-    <loc>https://zltunes.github.io/2019/04/20/cross-platform-app/</loc>
-    <lastmod>2019-04-19T16:00:00.000Z</lastmod>
-    <data>
-        <display>
-        <title>客户端跨平台开发技术对比</title>
-        <pubTime>2019-04-19T16:00:00.000Z</pubTime>
-        
-        <tag>Android</tag>
-         
-        <tag>iOS</tag>
-         
-        <tag>动态化</tag>
-         
-         
-           
-             
-              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
     <loc>https://zltunes.github.io/2019/04/19/blockchain/</loc>
-    <lastmod>2019-04-18T16:00:00.000Z</lastmod>
+    <lastmod>2019-05-31T03:09:24.796Z</lastmod>
     <data>
         <display>
         <title>区块链和比特币原理、以太坊开发</title>
@@ -49,7 +25,7 @@
     
   <url>
     <loc>https://zltunes.github.io/2019/04/18/about-https/</loc>
-    <lastmod>2019-04-17T16:00:00.000Z</lastmod>
+    <lastmod>2019-05-31T03:08:11.947Z</lastmod>
     <data>
         <display>
         <title>HTTPS 协议和原理</title>
@@ -61,6 +37,114 @@
            
              
               <breadCrumb title="web" url="https://zltunes.github.io/categories/web/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2019/04/21/app-statistics-report/</loc>
+    <lastmod>2019-05-31T03:03:53.998Z</lastmod>
+    <data>
+        <display>
+        <title>客户端数据埋点方案优化</title>
+        <pubTime>2019-04-20T16:00:00.000Z</pubTime>
+        
+        <tag>Android</tag>
+         
+        <tag>iOS</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2019/04/22/ios-network-diagnosis/</loc>
+    <lastmod>2019-05-31T03:02:44.539Z</lastmod>
+    <data>
+        <display>
+        <title>全面的 iOS 客户端网络诊断方案</title>
+        <pubTime>2019-04-21T16:00:00.000Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2019/04/24/dynamiccard/</loc>
+    <lastmod>2019-05-31T03:01:07.823Z</lastmod>
+    <data>
+        <display>
+        <title>DynamicCard - 基于 FlexBoxLayout 的动态排版渲染引擎</title>
+        <pubTime>2019-04-23T16:00:00.000Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2019/04/23/avplayer-best-practice/</loc>
+    <lastmod>2019-05-31T03:00:46.903Z</lastmod>
+    <data>
+        <display>
+        <title>AVPlayer 边下边播与最佳实践</title>
+        <pubTime>2019-04-22T16:00:00.000Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+        <tag>AVFoundation</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://zltunes.github.io/2019/04/20/cross-platform-app/</loc>
+    <lastmod>2019-04-19T16:00:00.000Z</lastmod>
+    <data>
+        <display>
+        <title>客户端跨平台开发技术对比</title>
+        <pubTime>2019-04-19T16:00:00.000Z</pubTime>
+        
+        <tag>Android</tag>
+         
+        <tag>iOS</tag>
+         
+        <tag>动态化</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
           
         </display>
     </data>
