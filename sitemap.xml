@@ -2,16 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://zltunes.github.io/2019/04/19/blockchain/</loc>
+    <loc>https://zltunes.github.io/about/index.html</loc>
     
-    <lastmod>2019-05-31T03:09:24.796Z</lastmod>
+    <lastmod>2019-05-31T07:36:33.907Z</lastmod>
     
   </url>
   
   <url>
     <loc>https://zltunes.github.io/2019/04/18/about-https/</loc>
     
-    <lastmod>2019-05-31T03:08:11.947Z</lastmod>
+    <lastmod>2019-05-31T03:12:53.144Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://zltunes.github.io/2019/04/19/blockchain/</loc>
+    
+    <lastmod>2019-05-31T03:09:24.796Z</lastmod>
     
   </url>
   
@@ -145,20 +152,6 @@
     <loc>https://zltunes.github.io/2018/10/17/google-guetzli/</loc>
     
     <lastmod>2018-10-16T16:00:00.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://zltunes.github.io/work/index.html</loc>
-    
-    <lastmod>2018-10-16T09:11:18.730Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://zltunes.github.io/about/index.html</loc>
-    
-    <lastmod>2018-06-20T07:48:53.734Z</lastmod>
     
   </url>
   

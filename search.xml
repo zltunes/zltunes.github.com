@@ -140,7 +140,7 @@
       <title>HTTPS 协议和原理</title>
       <link href="/2019/04/18/about-https/"/>
       <url>/2019/04/18/about-https/</url>
-      <content type="html"><![CDATA[<ul><li>HTTPS 的出现背景与发展趋势；</li><li>HTTPS 原理（内容加密防窃听、身份认证防冒充、数据完整防篡改）；</li><li>HTTPS 对性能的影响；</li><li>如何优化 HTTPS；</li><li>如何实现全站 HTTPS 等。<a id="more"></a><center><embed src="/share/https.pdf" width="800" height="610"></center></li></ul>]]></content>
+      <content type="html"><![CDATA[<ul><li>HTTPS 的出现背景与发展趋势；</li><li>HTTPS 原理（内容加密防窃听、身份认证防冒充、数据完整防篡改）；</li><li>HTTPS 对性能的影响；</li><li>如何优化 HTTPS；</li><li>如何实现全站 HTTPS 等。<a id="more"></a></li></ul><center><embed src="/share/https.pdf" width="800" height="610"></center>]]></content>
       
       <categories>
           
