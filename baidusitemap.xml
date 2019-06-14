@@ -4,18 +4,14 @@
 
     
   <url>
-    <loc>https://zltunes.github.io/2019/04/20/cross-platform-app/</loc>
-    <lastmod>2019-06-14T07:44:43.588Z</lastmod>
+    <loc>https://zltunes.github.io/2019/04/24/dynamiccard/</loc>
+    <lastmod>2019-06-14T09:24:45.672Z</lastmod>
     <data>
         <display>
-        <title>客户端跨平台开发技术对比</title>
-        <pubTime>2019-04-19T16:00:00.000Z</pubTime>
+        <title>DynamicCard - 基于 FlexBoxLayout 的动态排版框架</title>
+        <pubTime>2019-04-23T16:00:00.000Z</pubTime>
         
-        <tag>Android</tag>
-         
         <tag>iOS</tag>
-         
-        <tag>动态化</tag>
          
          
            
@@ -28,14 +24,18 @@
 
     
   <url>
-    <loc>https://zltunes.github.io/2019/04/24/dynamiccard/</loc>
-    <lastmod>2019-06-13T08:06:09.819Z</lastmod>
+    <loc>https://zltunes.github.io/2019/04/20/cross-platform-app/</loc>
+    <lastmod>2019-06-14T07:44:43.588Z</lastmod>
     <data>
         <display>
-        <title>DynamicCard - 基于 FlexBoxLayout 的动态排版框架</title>
-        <pubTime>2019-04-23T16:00:00.000Z</pubTime>
+        <title>客户端跨平台开发技术对比</title>
+        <pubTime>2019-04-19T16:00:00.000Z</pubTime>
         
+        <tag>Android</tag>
+         
         <tag>iOS</tag>
+         
+        <tag>动态化</tag>
          
          
            
