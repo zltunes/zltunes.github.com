@@ -4,8 +4,28 @@
 
     
   <url>
+    <loc>https://zltunes.github.io/2019/04/22/ios-network-diagnosis/</loc>
+    <lastmod>2019-06-17T13:43:11.317Z</lastmod>
+    <data>
+        <display>
+        <title>全面的 iOS 客户端网络诊断方案</title>
+        <pubTime>2019-04-21T16:00:00.000Z</pubTime>
+        
+        <tag>iOS</tag>
+         
+         
+           
+             
+              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://zltunes.github.io/2019/04/24/dynamiccard/</loc>
-    <lastmod>2019-06-14T09:24:45.672Z</lastmod>
+    <lastmod>2019-06-17T02:54:30.507Z</lastmod>
     <data>
         <display>
         <title>DynamicCard - 基于 FlexBoxLayout 的动态排版框架</title>
@@ -98,26 +118,6 @@
         
         <tag>Android</tag>
          
-        <tag>iOS</tag>
-         
-         
-           
-             
-              <breadCrumb title="iOS" url="https://zltunes.github.io/categories/iOS/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://zltunes.github.io/2019/04/22/ios-network-diagnosis/</loc>
-    <lastmod>2019-05-31T03:02:44.539Z</lastmod>
-    <data>
-        <display>
-        <title>全面的 iOS 客户端网络诊断方案</title>
-        <pubTime>2019-04-21T16:00:00.000Z</pubTime>
-        
         <tag>iOS</tag>
          
          
